@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewp                <button class="action-btn refresh-btn" id="refresh-btn" title="Odśwież artykuły (R)">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                        <path d="M21 3v5h-5"/>
+                        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                        <path d="M3 21v-5h5"/>
+                    </svg>
+                </button>
+                
+                <button class="action-btn load-more-btn" id="load-more-btn" title="Załaduj więcej artykułów (M)">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14"/>
+                        <path d="M5 12h14"/>
+                    </svg>
+                </button>
+            </div>ent="width=device-width, initial-scale=1.0">
+    <title>Feedlizer - Tinder dla artykułów</title>
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="https://feedly.com/favicon.ico">
+    <link rel="apple-touch-icon" href="https://feedly.com/apple-touch-icon.png">
+    <link rel="shortcut icon" href="https://feedly.com/favicon.ico">
+    
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#1a1a1a">
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo">� Feedlizer</h1>
+                <div class="stats">
+                    <span class="stat" id="remaining-count">--</span>
+                    <span class="stat-label">pozostało</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Loading Screen -->
+        <div class="loading-screen" id="loading-screen">
+            <div class="loading-spinner"></div>
+            <p>Ładowanie artykułów...</p>
+        </div>
+
+        <!-- Error Screen -->
+        <div class="error-screen" id="error-screen" style="display: none;">
+            <div class="error-content">
+                <h2>😔 Ups!</h2>
+                <p id="error-message">Wystąpił błąd podczas ładowania artykułów.</p>
+                <button class="retry-btn" onclick="loadArticles()">Spróbuj ponownie</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main" id="main-content" style="display: none;">
+            <!-- Login Modal -->
+            <div id="loginModal" class="modal hidden">
+                <div class="modal-content">
+                    <h2>🔐 Zaloguj się do Feedly</h2>
+                    <form id="loginForm">
+                        <input type="email" id="emailInput" placeholder="Twój email Feedly" required>
+                        <input type="password" id="passwordInput" placeholder="Twoje hasło Feedly" required>
+                        <button type="submit">Zaloguj się</button>
+                        <p class="login-info">
+                            ℹ️ Twoje dane będą zapisane lokalnie i używane do połączenia z Feedly
+                        </p>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Card Stack -->
+            <div class="card-stack" id="card-stack">
+                <!-- Cards will be dynamically inserted here -->
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="action-btn back-btn" id="back-btn" title="Cofnij (←)">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                
+                <button class="action-btn read-btn" id="read-btn" title="Oznacz jako przeczytane (↓)">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                </button>
+                
+                <button class="action-btn save-btn" id="save-btn" title="Wyślij do Instapaper (↑)">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5Z"/>
+                    </svg>
+                </button>
+                
+                <button class="action-btn refresh-btn" id="refresh-btn" title="Odśwież artykuły (R)">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                        <path d="M21 3v5h-5"/>
+                        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                        <path d="M3 21v-5h5"/>
+                    </svg>
+                </button>
+                
+                <button class="action-btn load-more-btn" id="load-more-btn" title="Załaduj więcej (M)">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14"/>
+                        <path d="M5 12l7 7 7-7"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Instructions -->
+            <div class="instructions">
+                <div class="instruction">
+                    <span class="key">↑</span>
+                    <span class="desc">Instapaper</span>
+                </div>
+                <div class="instruction">
+                    <span class="key">↓</span>
+                    <span class="desc">Przeczytane</span>
+                </div>
+                <div class="instruction">
+                    <span class="key">←</span>
+                    <span class="desc">Cofnij</span>
+                </div>
+                <div class="instruction">
+                    <span class="key">R</span>
+                    <span class="desc">Odśwież</span>
+                </div>
+                <div class="instruction">
+                    <span class="key">M</span>
+                    <span class="desc">Więcej</span>
+                </div>
+            </div>
+        </main>
+
+        <!-- Toast Notifications -->
+        <div class="toast-container" id="toast-container">
+            <!-- Toasts will be dynamically inserted here -->
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <span>@mateopoznan</span>
+                <span class="separator">•</span>
+                <span>Feedlizer v0.3</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+</body>
+</html>
