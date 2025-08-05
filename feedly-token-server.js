@@ -276,9 +276,12 @@ if (fs.existsSync('feedly-config.json')) {
     }
 }
 
-// Jeśli nie ma tokenu w pliku, użyj tego z przykładu (można zaktualizować)
+// Jeśli nie ma tokenu w pliku, pokaż błąd
 if (!feedlyToken) {
-    feedlyToken = 'eyJraWQiOiJhdXQiLCJ2IjoiMSIsImFsZyI6ImRpciIsImVuYyI6IkEyNTZHQ00ifQ..zessfMUFXyy8-MMB.xK9dtiOpQQSdnb3pl4jGxEzUbySbAGJeuUB2M9KmoqhVOwJTqgTPBVE0L0WCfmA6Lk9Yi-JXADkev3RQZGJkhvPUS1W648V_R2YR3lhP3uIY8J_ELTRgS6t2x_pERxpPKW-ACp3Dtr1C-5KEIIAPQW2kmy-OpS2ZKufsaI8o2p-R9JKeG2TMP8g0BnmmjoGxkQ0dTNWbMtXh07eOeJI15B-meOcaH6A.N_uDjikmzmR8nxwZ3UO-lg';
+    console.error('❌ Brak tokenu Feedly! Dodaj token do pliku feedly-config.json');
+    console.error('Przykład pliku feedly-config.json:');
+    console.error(JSON.stringify({ "token": "YOUR_FEEDLY_TOKEN_HERE" }, null, 2));
+    process.exit(1);
 }
 
 const feedlyAPI = new FeedlyAPI(feedlyToken);
