@@ -4,6 +4,155 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 const crypto = require('crypto');
+const axios = require('axios');
+
+require('dotenv').config();
+
+// OAuth 1.0a signature generation for Instapaper
+function generateOAuthSignature(method, url, params, consumerSecret, tokenSecret = '') {
+    // OAuth 1.0a requires RFC 3986 encoding (encodeURIComponent with additional encoding)
+    const percentEncode = (str) => {
+        return encodeURIComponent(str)
+            .replace(/[!'()*]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase());
+    };
+    
+    const sortedParams = Object.keys(params)
+        .sort()
+        .map(key => `${percentEncode(key)}=${percentEncode(params[key])}`)
+        .join('&');
+
+    const baseString = `${method}&${percentEncode(url)}&${percentEncode(sortedParams)}`;
+    const signingKey = `${percentEncode(consumerSecret)}&${percentEncode(tokenSecret)}`;
+    
+    return crypto
+        .createHmac('sha1', signingKey)
+        .update(baseString)
+        .digest('base64');
+}
+
+// Cache for Instapaper OAuth tokens
+let instapaperTokenCache = {
+    token: null,
+    secret: null,
+    expires: 0
+};
+
+// Instapaper API helper with proper OAuth flow
+async function addToInstapaper(url, title, description) {
+    const consumerKey = process.env.INSTAPAPER_CONSUMER_KEY;
+    const consumerSecret = process.env.INSTAPAPER_CONSUMER_SECRET;
+    const username = process.env.INSTAPAPER_USERNAME;
+    const password = process.env.INSTAPAPER_PASSWORD;
+
+    if (!consumerKey || !consumerSecret || !username || !password) {
+        throw new Error('Instapaper credentials not configured in .env file');
+    }
+
+    try {
+        let oauthToken, oauthTokenSecret;
+
+        // Check if we have a cached token (valid for 1 hour)
+        if (instapaperTokenCache.token && Date.now() < instapaperTokenCache.expires) {
+            oauthToken = instapaperTokenCache.token;
+            oauthTokenSecret = instapaperTokenCache.secret;
+            console.log('🔄 Using cached Instapaper token');
+        } else {
+            // Step 1: Get fresh OAuth access token
+            console.log('🔑 Getting fresh Instapaper OAuth token');
+            
+            const oauthParams = {
+                oauth_consumer_key: consumerKey,
+                oauth_nonce: crypto.randomBytes(16).toString('hex'),
+                oauth_signature_method: 'HMAC-SHA1',
+                oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+                oauth_version: '1.0'
+            };
+
+            const tokenRequestParams = {
+                ...oauthParams,
+                x_auth_mode: 'client_auth',
+                x_auth_username: username,
+                x_auth_password: password
+            };
+
+            const tokenSignature = generateOAuthSignature(
+                'POST',
+                'https://www.instapaper.com/api/1/oauth/access_token',
+                tokenRequestParams,
+                consumerSecret
+            );
+
+            tokenRequestParams.oauth_signature = tokenSignature;
+
+            const tokenResponse = await axios.post(
+                'https://www.instapaper.com/api/1/oauth/access_token',
+                new URLSearchParams(tokenRequestParams).toString(),
+                {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                }
+            );
+
+            // Parse token response
+            const tokenData = new URLSearchParams(tokenResponse.data);
+            oauthToken = tokenData.get('oauth_token');
+            oauthTokenSecret = tokenData.get('oauth_token_secret');
+
+            // Cache the token for 1 hour
+            instapaperTokenCache = {
+                token: oauthToken,
+                secret: oauthTokenSecret,
+                expires: Date.now() + (60 * 60 * 1000) // 1 hour
+            };
+        }
+
+        // Step 2: Use token to add bookmark
+        const bookmarkParams = {
+            oauth_consumer_key: consumerKey,
+            oauth_nonce: crypto.randomBytes(16).toString('hex'),
+            oauth_signature_method: 'HMAC-SHA1',
+            oauth_timestamp: Math.floor(Date.now() / 1000).toString(), // Always fresh timestamp!
+            oauth_version: '1.0',
+            oauth_token: oauthToken,
+            url: url,
+            ...(title && { title })
+            // Skip description for now to avoid OAuth signature issues
+        };
+
+        const bookmarkSignature = generateOAuthSignature(
+            'POST',
+            'https://www.instapaper.com/api/1/bookmarks/add',
+            bookmarkParams,
+            consumerSecret,
+            oauthTokenSecret
+        );
+
+        bookmarkParams.oauth_signature = bookmarkSignature;
+
+        const bookmarkResponse = await axios.post(
+            'https://www.instapaper.com/api/1/bookmarks/add',
+            new URLSearchParams(bookmarkParams).toString(),
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }
+        );
+
+        // Instapaper returns 200 for successful bookmark additions, not 201
+        if (bookmarkResponse.status !== 200) {
+            throw new Error(`Failed to add bookmark: ${bookmarkResponse.status}`);
+        }
+
+        console.log('✅ Successfully saved to Instapaper');
+        return true;
+
+    } catch (error) {
+        console.error('Instapaper API Error:', error.response?.data || error.message);
+        throw error;
+    }
+}
 
 const PORT = 12012;
 
@@ -320,6 +469,9 @@ const server = http.createServer(async (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const pathname = parsedUrl.pathname;
 
+    // Log all requests
+    console.log(`📥 ${req.method} ${pathname}${parsedUrl.search || ''}`);
+
     // CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -391,6 +543,7 @@ const server = http.createServer(async (req, res) => {
                 console.log(`✅ Cached ${cachedArticles.length} articles`);
             }
             
+            console.log(`📤 Sending ${cachedArticles.length} articles to client`);
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ items: cachedArticles }));
         } catch (error) {
@@ -432,20 +585,24 @@ const server = http.createServer(async (req, res) => {
             req.on('data', chunk => body += chunk);
             req.on('end', async () => {
                 try {
-                    if (!isInitialized) {
-                        await initialize();
-                    }
-
                     const data = JSON.parse(body);
-                    await feedlyAPI.saveForLater(data.id);
+                    
+                    // Save to Instapaper instead of Feedly
+                    await addToInstapaper(
+                        data.url || data.originUrl, 
+                        data.title, 
+                        data.description || data.summary
+                    );
+                    
+                    console.log(`📚 Saved to Instapaper: ${data.title}`);
                     
                     // Usuń z cache po zapisaniu
                     cachedArticles = cachedArticles.filter(article => article.id !== data.id);
                     
                     res.writeHead(200, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ success: true, message: 'Article saved to Feedly "Read Later"' }));
+                    res.end(JSON.stringify({ success: true, message: 'Article saved to Instapaper' }));
                 } catch (error) {
-                    console.error('Error saving article:', error);
+                    console.error('Error saving to Instapaper:', error);
                     res.writeHead(500, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ error: error.message }));
                 }
@@ -499,7 +656,16 @@ const server = http.createServer(async (req, res) => {
                 return;
             }
 
-            res.writeHead(200, { 'Content-Type': contentType });
+            const headers = { 'Content-Type': contentType };
+            
+            // Disable cache for JavaScript files to ensure updates are loaded
+            if (ext === '.js') {
+                headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+                headers['Pragma'] = 'no-cache';
+                headers['Expires'] = '0';
+            }
+
+            res.writeHead(200, headers);
             res.end(content);
         });
     });

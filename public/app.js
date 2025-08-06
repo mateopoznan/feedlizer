@@ -1,6 +1,32 @@
 // Feedlizer App - Main JavaScript
+console.log('🚀 app.js loaded!');
+
+// PWA detection and link handling
+function isPWA() {
+    return window.matchMedia('(display-mode: standalone)').matches || 
+           window.navigator.standalone === true ||
+           document.referrer.includes('android-app://');
+}
+
+function openExternalLink(url) {
+    if (isPWA()) {
+        // W PWA - otwórz w systemowej przeglądarce
+        if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
+            // iOS - użyj window.open, który automatycznie otworzy Safari
+            window.open(url, '_blank');
+        } else {
+            // Android - użyj window.open z noopener
+            window.open(url, '_blank', 'noopener,noreferrer');
+        }
+    } else {
+        // W zwykłej przeglądarce - otwórz w nowej karcie
+        window.open(url, '_blank');
+    }
+}
+
 class Feedlizer {
     constructor() {
+        console.log('🏗️ Feedlizer constructor called');
         this.articles = [];
         this.currentIndex = 0;
         this.history = [];
@@ -9,8 +35,121 @@ class Feedlizer {
         this.startPos = { x: 0, y: 0 };
         this.currentPos = { x: 0, y: 0 };
         this.dragDistance = 0;
+        this.originalFavicon = null;
         
+        console.log('🔧 About to call init()');
         this.init();
+    }
+
+    // Badge functionality for PWA and favicon
+    async updateAppBadge(count = null) {
+        const unreadCount = count !== null ? count : this.getUnreadCount();
+        
+        // 1. PWA Badge API (Chrome/Edge on Android)
+        if ('setAppBadge' in navigator) {
+            try {
+                if (unreadCount > 0) {
+                    await navigator.setAppBadge(unreadCount);
+                    console.log(`🔴 App badge set to: ${unreadCount}`);
+                } else {
+                    await navigator.clearAppBadge();
+                    console.log('⚪ App badge cleared');
+                }
+            } catch (error) {
+                console.log('Badge API not supported:', error);
+            }
+        }
+        
+        // 2. Favicon with badge (fallback for all browsers)
+        this.updateFaviconBadge(unreadCount);
+        
+        // 3. Update document title
+        if (unreadCount > 0) {
+            document.title = `(${unreadCount}) Feedlizer - Tinder dla artykułów`;
+        } else {
+            document.title = 'Feedlizer - Tinder dla artykułów';
+        }
+    }
+    
+    updateFaviconBadge(count) {
+        // Store original favicon if not stored yet
+        if (!this.originalFavicon) {
+            const faviconLink = document.querySelector('link[rel="icon"]') || 
+                              document.querySelector('link[rel="shortcut icon"]');
+            if (faviconLink) {
+                this.originalFavicon = faviconLink.href;
+            }
+        }
+        
+        if (count > 0) {
+            // Create canvas to draw favicon with badge
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 32;
+            canvas.height = 32;
+            
+            // Create base favicon (simple RSS icon)
+            ctx.fillStyle = '#FF6600';
+            ctx.fillRect(0, 0, 32, 32);
+            
+            // RSS circles
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(8, 24, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // RSS arcs
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(8, 24, 8, 0, Math.PI / 2);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.arc(8, 24, 14, 0, Math.PI / 2);
+            ctx.stroke();
+            
+            // Badge circle
+            if (count > 0) {
+                const badgeSize = count > 99 ? 16 : count > 9 ? 14 : 12;
+                ctx.fillStyle = '#FF3B30';
+                ctx.beginPath();
+                ctx.arc(26, 6, badgeSize/2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Badge text
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = `bold ${badgeSize > 12 ? '8px' : '9px'} sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const badgeText = count > 99 ? '99+' : count.toString();
+                ctx.fillText(badgeText, 26, 6);
+            }
+            
+            // Convert to data URL and update favicon
+            const dataURL = canvas.toDataURL('image/png');
+            this.setFavicon(dataURL);
+        } else {
+            // Restore original favicon
+            if (this.originalFavicon) {
+                this.setFavicon(this.originalFavicon);
+            }
+        }
+    }
+    
+    setFavicon(url) {
+        let faviconLink = document.querySelector('link[rel="icon"]');
+        if (!faviconLink) {
+            faviconLink = document.createElement('link');
+            faviconLink.rel = 'icon';
+            document.head.appendChild(faviconLink);
+        }
+        faviconLink.href = url;
+    }
+    
+    getUnreadCount() {
+        // Count remaining unread articles
+        return Math.max(0, this.articles.length - this.currentIndex);
     }
 
     // Toast notification system
@@ -46,12 +185,23 @@ class Feedlizer {
 
     async init() {
         this.bindEvents();
+        
+        // Initialize badge (clear it first)
+        await this.updateAppBadge(0);
+        
         await this.loadArticles();
     }
 
     bindEvents() {
         // Keyboard events
         document.addEventListener('keydown', this.handleKeyboard.bind(this));
+        
+        // Visibility change - update badge when user returns to app
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                this.updateAppBadge();
+            }
+        });
         
         // Button events
         document.getElementById('back-btn').addEventListener('click', this.goBack.bind(this));
@@ -83,9 +233,13 @@ class Feedlizer {
         this.showLoading(true);
         
         try {
+            console.log('🔄 Fetching articles from API...');
             const response = await fetch(`/api/feedly/stream?count=${count}`);
+            console.log('📡 Response status:', response.status);
+            console.log('📡 Response headers:', response.headers);
             
             if (!response.ok) {
+                console.error('❌ Response not OK:', response.status, response.statusText);
                 if (response.status === 401) {
                     // Need to login
                     const errorData = await response.json();
@@ -98,7 +252,15 @@ class Feedlizer {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
+            console.log('📥 Parsing JSON...');
             const data = await response.json();
+            console.log('✅ Received data:', data);
+            console.log('📊 Articles count:', data.items ? data.items.length : 'NO ITEMS');
+            console.log('📋 Data structure check:', {
+                hasItems: !!data.items,
+                isArray: Array.isArray(data.items),
+                dataKeys: Object.keys(data)
+            });
             
             // Check if we need to login
             if (data.needLogin) {
@@ -111,38 +273,133 @@ class Feedlizer {
             this.articles = (data.items || []).sort((a, b) => new Date(b.published) - new Date(a.published));
             
             if (this.articles.length === 0) {
+                console.warn('⚠️ No articles found');
                 this.showToast('📭 Brak nowych artykułów do wyświetlenia', 'info');
                 this.showError('Brak nowych artykułów do wyświetlenia.');
                 return;
             }
 
+            console.log('🎯 Setting up articles:', this.articles.length);
             this.currentIndex = 0;
-            this.renderCards();
-            this.updateStats();
+            console.log('🔧 About to call renderCards()...');
+            try {
+                this.renderCards();
+                console.log('✅ renderCards() completed successfully');
+            } catch (renderError) {
+                console.error('� Error in renderCards():', renderError);
+                throw new Error(`renderCards failed: ${renderError.message}`);
+            }
+            
+            console.log('�📊 About to call updateStats()...');
+            try {
+                this.updateStats();
+                console.log('✅ updateStats() completed successfully');
+            } catch (statsError) {
+                console.error('💥 Error in updateStats():', statsError);
+                // Continue even if stats fail
+            }
+            console.log('🔄 About to hide loading screen...');
             this.showLoading(false);
+            console.log('🎉 About to show success toast...');
             this.showToast(`📚 Załadowano ${this.articles.length} artykułów`, 'success');
+            
+            // Update app badge with unread count
+            await this.updateAppBadge();
+            
+            console.log('✅ loadArticles() completed successfully!');
 
         } catch (error) {
-            console.error('Error loading articles:', error);
-            this.showToast('❌ Błąd podczas ładowania artykułów', 'error');
-            this.showError('Nie udało się załadować artykułów. Sprawdź połączenie z Feedly.');
+            console.error('💥 Error loading articles:', error);
+            console.error('💥 Error stack:', error.stack);
+            console.error('💥 Error name:', error.name);
+            console.error('💥 Error message:', error.message);
+            
+            // Show detailed error information
+            this.showToast(`❌ Błąd: ${error.message}`, 'error');
+            this.showError(`Błąd JavaScript: ${error.message}`);
+            
+            // Also try to show loading screen off in case it's stuck
+            setTimeout(() => {
+                this.showLoading(false);
+            }, 100);
         }
     }
 
     renderCards() {
+        console.log('🎨 renderCards() START');
+        console.log('🔢 articles.length:', this.articles.length);
+        console.log('🎯 currentIndex:', this.currentIndex);
+        console.log('📋 First few articles:', this.articles.slice(0, 3).map(a => ({
+            id: a.id,
+            title: a.title?.substring(0, 50) + '...',
+            hasTitle: !!a.title,
+            hasId: !!a.id
+        })));
+        
         const cardStack = document.getElementById('card-stack');
-        cardStack.innerHTML = '';
+        if (!cardStack) {
+            console.error('❌ card-stack element not found!');
+            throw new Error('card-stack element not found');
+        }
+        console.log('✅ card-stack element found');
+        
+        try {
+            cardStack.innerHTML = '';
+            console.log('✅ cardStack cleared');
+        } catch (clearError) {
+            console.error('💥 Error clearing cardStack:', clearError);
+            throw clearError;
+        }
         
         // Render current and next few cards for smooth transitions
-        for (let i = 0; i < Math.min(3, this.articles.length - this.currentIndex); i++) {
+        console.log('🔄 About to render cards, currentIndex:', this.currentIndex);
+        const cardsToRender = Math.min(3, this.articles.length - this.currentIndex);
+        console.log('📊 Will render', cardsToRender, 'cards');
+        
+        for (let i = 0; i < cardsToRender; i++) {
             const articleIndex = this.currentIndex + i;
             const article = this.articles[articleIndex];
-            const card = this.createCard(article, i);
-            cardStack.appendChild(card);
+            console.log(`🎯 Creating card ${i} for article ${articleIndex}:`, {
+                title: article?.title?.substring(0, 50) + '...',
+                id: article?.id,
+                hasRequiredFields: !!(article?.id && article?.title)
+            });
+            
+            try {
+                const card = this.createCard(article, i);
+                if (card) {
+                    cardStack.appendChild(card);
+                    console.log(`✅ Card ${i} added successfully`);
+                } else {
+                    console.error(`❌ Card ${i} creation returned null/undefined`);
+                }
+            } catch (error) {
+                console.error(`💥 Error creating card ${i}:`, error);
+                console.error('🔍 Problematic article:', article);
+                // Skip this article and continue with next
+                continue;
+            }
         }
+        
+        console.log('✅ renderCards() COMPLETED');
     }
 
     createCard(article, stackIndex = 0) {
+        // Validate article data
+        if (!article || !article.id) {
+            console.error('❌ Invalid article data:', article);
+            return null;
+        }
+        
+        console.log('🔧 Creating card for article:', {
+            id: article.id,
+            title: article.title,
+            hasTitle: !!article.title,
+            hasOrigin: !!article.origin,
+            hasSummary: !!article.summary,
+            hasPublished: !!article.published
+        });
+        
         const card = document.createElement('div');
         card.className = 'article-card';
         card.style.zIndex = 10 - stackIndex;
@@ -151,24 +408,35 @@ class Feedlizer {
         
         // Get a good summary
         let summary = '';
-        if (article.summary && article.summary.content) {
-            summary = article.summary.content.replace(/<[^>]*>/g, '').trim();
-        } else if (article.summary) {
-            summary = article.summary.replace(/<[^>]*>/g, '').trim();
+        try {
+            if (article.summary && article.summary.content) {
+                summary = article.summary.content.replace(/<[^>]*>/g, '').trim();
+            } else if (article.summary) {
+                summary = String(article.summary).replace(/<[^>]*>/g, '').trim();
+            }
+            
+            if (summary.length > 300) {
+                summary = summary.substring(0, 300) + '...';
+            }
+        } catch (error) {
+            console.error('❌ Error processing summary:', error, 'for article:', article.id);
+            summary = 'Brak opisu artykułu.';
         }
-        
-        if (summary.length > 300) {
-            summary = summary.substring(0, 300) + '...';
-        }
-        
+
         // Format date
-        const publishedDate = article.published ? 
-            new Date(article.published).toLocaleDateString('pl-PL', {
-                day: 'numeric',
-                month: 'short',
-                hour: '2-digit',
-                minute: '2-digit'
-            }) : 'Nieznana data';
+        let publishedDate = 'Nieznana data';
+        try {
+            publishedDate = article.published ? 
+                new Date(article.published).toLocaleDateString('pl-PL', {
+                    day: 'numeric',
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }) : 'Nieznana data';
+        } catch (error) {
+            console.error('❌ Error formatting date:', error, 'for article:', article.id);
+            publishedDate = 'Nieznana data';
+        }
         
         // Get image URL
         const imageUrl = article.visual?.url || article.visual;
@@ -191,7 +459,7 @@ class Feedlizer {
                     <h2 class="article-title">${article.title || 'Bez tytułu'}</h2>
                     ${summary ? `<p class="article-summary">${summary}</p>` : ''}
                     <div class="article-date">${publishedDate}</div>
-                    ${articleUrl ? `<button class="open-article-btn" onclick="window.open('${articleUrl}', '_blank'); event.stopPropagation();">🔗 Otwórz artykuł</button>` : ''}
+                    ${articleUrl ? `<button class="open-article-btn" onclick="openExternalLink('${articleUrl}'); event.stopPropagation();">🔗 Otwórz artykuł</button>` : ''}
                 </div>
             </div>
         `;
@@ -221,8 +489,8 @@ class Feedlizer {
                 // Consider it a click if it was quick and not dragged
                 if (duration < 300 && !wasDragged) {
                     console.log('Opening article:', articleUrl);
-                    window.open(articleUrl, '_blank');
-                    this.showToast('🔗 Artykuł otwarty w nowej karcie', 'info');
+                    openExternalLink(articleUrl);
+                    this.showToast('🔗 Artykuł otwarty w przeglądarce', 'info');
                 }
                 
                 startTime = 0;
@@ -248,8 +516,8 @@ class Feedlizer {
                 // Consider it a tap if it was quick and not dragged
                 if (duration < 300 && !wasDragged) {
                     console.log('Opening article:', articleUrl);
-                    window.open(articleUrl, '_blank');
-                    this.showToast('🔗 Artykuł otwarty w nowej karcie', 'info');
+                    openExternalLink(articleUrl);
+                    this.showToast('🔗 Artykuł otwarty w przeglądarce', 'info');
                 }
                 
                 startTime = 0;
@@ -359,7 +627,9 @@ class Feedlizer {
             }
         } else if (absX > threshold) {
             if (this.currentPos.x < -threshold) {
-                this.goBack();
+                this.goBack(); // Swipe LEFT = Go Back
+            } else if (this.currentPos.x > threshold) {
+                this.goBack(); // Swipe RIGHT = Go Back too (for convenience)
             } else {
                 this.resetCard(card);
             }
@@ -383,7 +653,7 @@ class Feedlizer {
         const buttons = {
             'save-btn': this.currentPos.y < -threshold,
             'read-btn': this.currentPos.y > threshold,
-            'back-btn': this.currentPos.x < -threshold
+            'back-btn': Math.abs(this.currentPos.x) > threshold // Both left AND right swipe show back button feedback
         };
         
         Object.entries(buttons).forEach(([id, active]) => {
@@ -442,6 +712,9 @@ class Feedlizer {
         }
         
         this.nextArticle();
+        
+        // Update badge after saving to Instapaper
+        await this.updateAppBadge();
     }
 
     async markAsRead() {
@@ -466,6 +739,9 @@ class Feedlizer {
         }
         
         this.nextArticle();
+        
+        // Update badge after marking as read
+        await this.updateAppBadge();
     }
 
     goBack() {
@@ -551,28 +827,58 @@ class Feedlizer {
     }
 
     showLoading(show) {
+        console.log('🔄 showLoading called with:', show);
         const loadingScreen = document.getElementById('loading-screen');
         const mainContent = document.getElementById('main-content');
         
+        if (!loadingScreen) {
+            console.error('❌ loading-screen element not found!');
+            return;
+        }
+        if (!mainContent) {
+            console.error('❌ main-content element not found!');
+            return;
+        }
+        
         if (show) {
+            console.log('📱 Showing loading screen, hiding main content');
             loadingScreen.style.display = 'flex';
             mainContent.style.display = 'none';
         } else {
+            console.log('📱 Hiding loading screen, showing main content');
             loadingScreen.style.display = 'none';
             mainContent.style.display = 'flex';
         }
+        
+        console.log('✅ showLoading completed:', {
+            loadingDisplay: loadingScreen.style.display,
+            mainDisplay: mainContent.style.display
+        });
     }
 
     showError(message) {
+        console.log('💥 showError called with:', message);
         const errorScreen = document.getElementById('error-screen');
         const errorMessage = document.getElementById('error-message');
         const mainContent = document.getElementById('main-content');
         const loadingScreen = document.getElementById('loading-screen');
         
+        if (!errorScreen || !errorMessage || !mainContent || !loadingScreen) {
+            console.error('❌ Some error screen elements not found:', {
+                errorScreen: !!errorScreen,
+                errorMessage: !!errorMessage,
+                mainContent: !!mainContent,
+                loadingScreen: !!loadingScreen
+            });
+            return;
+        }
+        
         errorMessage.textContent = message;
         errorScreen.style.display = 'flex';
         mainContent.style.display = 'none';
         loadingScreen.style.display = 'none';
+        
+        console.log('📱 Error screen shown, other screens hidden');
     }
 
     showToast(message, type = 'info') {
@@ -681,5 +987,11 @@ function showLoginModal() {
 
 // Setup on page load
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🎯 DOM loaded, setting up application...');
     setupLoginModal();
+    
+    // Initialize Feedlizer app
+    console.log('🚀 Creating Feedlizer instance...');
+    window.feedlyTinder = new Feedlizer();
+    console.log('✅ Feedlizer instance created and assigned to window.feedlyTinder');
 });
