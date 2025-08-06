@@ -8,6 +8,35 @@ const axios = require('axios');
 
 require('dotenv').config();
 
+// Request deduplication cache
+const requestCache = new Map();
+const CACHE_TTL = 5000; // 5 seconds
+
+function isDuplicateRequest(key) {
+    const now = Date.now();
+    const cached = requestCache.get(key);
+    
+    console.log(`🔍 Checking duplicate for key: ${key}`);
+    console.log(`📊 Cache size: ${requestCache.size}`);
+    
+    if (cached && (now - cached.timestamp) < CACHE_TTL) {
+        console.log(`🚫 Duplicate request blocked: ${key} (age: ${now - cached.timestamp}ms)`);
+        return true;
+    }
+    
+    requestCache.set(key, { timestamp: now });
+    console.log(`✅ New request allowed: ${key}`);
+    
+    // Clean old entries
+    for (const [cachedKey, cachedValue] of requestCache.entries()) {
+        if ((now - cachedValue.timestamp) >= CACHE_TTL) {
+            requestCache.delete(cachedKey);
+        }
+    }
+    
+    return false;
+}
+
 // OAuth 1.0a signature generation for Instapaper
 function generateOAuthSignature(method, url, params, consumerSecret, tokenSecret = '') {
     // OAuth 1.0a requires RFC 3986 encoding (encodeURIComponent with additional encoding)
@@ -558,23 +587,82 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (pathname.startsWith('/api/feedly/mark-read/')) {
-        try {
-            if (!isInitialized) {
-                await initialize();
-            }
+        if (req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => body += chunk);
+            req.on('end', async () => {
+                try {
+                    if (!isInitialized) {
+                        await initialize();
+                    }
 
-            const articleId = decodeURIComponent(pathname.split('/').pop());
-            await feedlyAPI.markAsRead(articleId);
-            
-            // Usuń z cache
-            cachedArticles = cachedArticles.filter(article => article.id !== articleId);
-            
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ success: true, message: 'Article marked as read in Feedly' }));
-        } catch (error) {
-            console.error('Error marking as read:', error);
-            res.writeHead(500, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: error.message }));
+                    const articleId = decodeURIComponent(pathname.split('/').pop());
+                    
+                    // Check for duplicate request
+                    const requestKey = `mark_read_${articleId}`;
+                    if (isDuplicateRequest(requestKey)) {
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ success: true, message: 'Duplicate mark-as-read request ignored' }));
+                        return;
+                    }
+                    
+                    // Parse request body for callId if available
+                    let callId = 'unknown';
+                    try {
+                        const requestData = JSON.parse(body);
+                        callId = requestData.callId || 'unknown';
+                    } catch (e) {
+                        // Ignore parse errors for backward compatibility
+                    }
+                    
+                    console.log(`📤 Processing mark-as-read request (ID: ${callId}):`, articleId);
+                    
+                    await feedlyAPI.markAsRead(articleId);
+                    
+                    // Usuń z cache
+                    cachedArticles = cachedArticles.filter(article => article.id !== articleId);
+                    
+                    console.log(`✅ Marked as read:`, articleId);
+                    
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: true, message: 'Article marked as read in Feedly' }));
+                } catch (error) {
+                    console.error('Error marking as read:', error);
+                    res.writeHead(500, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ error: error.message }));
+                }
+            });
+        } else {
+            // Handle GET requests for backward compatibility
+            try {
+                if (!isInitialized) {
+                    await initialize();
+                }
+
+                const articleId = decodeURIComponent(pathname.split('/').pop());
+                
+                // Check for duplicate request
+                const requestKey = `mark_read_${articleId}`;
+                if (isDuplicateRequest(requestKey)) {
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: true, message: 'Duplicate mark-as-read request ignored' }));
+                    return;
+                }
+                
+                console.log(`📤 Processing mark-as-read GET request:`, articleId);
+                
+                await feedlyAPI.markAsRead(articleId);
+                
+                // Usuń z cache
+                cachedArticles = cachedArticles.filter(article => article.id !== articleId);
+                
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true, message: 'Article marked as read in Feedly' }));
+            } catch (error) {
+                console.error('Error marking as read:', error);
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: error.message }));
+            }
         }
         return;
     }
@@ -586,6 +674,16 @@ const server = http.createServer(async (req, res) => {
             req.on('end', async () => {
                 try {
                     const data = JSON.parse(body);
+                    
+                    // Check for duplicate request
+                    const requestKey = `instapaper_${data.id}_${data.title}`;
+                    if (isDuplicateRequest(requestKey)) {
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ success: true, message: 'Duplicate request ignored' }));
+                        return;
+                    }
+                    
+                    console.log(`📤 Processing Instapaper save request (ID: ${data.callId}):`, data.title);
                     
                     // Save to Instapaper instead of Feedly
                     await addToInstapaper(

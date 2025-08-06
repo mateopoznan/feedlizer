@@ -1,5 +1,5 @@
 [Unit]
-Description=Feedlizer v0.6 - Tinder for RSS Articles
+Description=Feedlizer v0.7.1 - Tinder for RSS Articles
 After=network.target
 
 [Service]

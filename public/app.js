@@ -31,6 +31,10 @@ class Feedlizer {
         this.currentIndex = 0;
         this.history = [];
         this.isLoading = false;
+        this.isSaving = false;          // Prevent duplicate saves
+        this.isMarking = false;         // Prevent duplicate mark-as-read
+        this.isProcessingGesture = false; // Prevent rapid gesture processing
+        this.isNavigating = false;      // Prevent rapid navigation
         this.isDragging = false;
         this.startPos = { x: 0, y: 0 };
         this.currentPos = { x: 0, y: 0 };
@@ -193,6 +197,8 @@ class Feedlizer {
     }
 
     bindEvents() {
+        console.log('🔗 bindEvents() called - adding event listeners');
+        
         // Keyboard events
         document.addEventListener('keydown', this.handleKeyboard.bind(this));
         
@@ -204,14 +210,31 @@ class Feedlizer {
         });
         
         // Button events
-        document.getElementById('back-btn').addEventListener('click', this.goBack.bind(this));
-        document.getElementById('read-btn').addEventListener('click', this.markAsRead.bind(this));
-        document.getElementById('save-btn').addEventListener('click', this.saveToInstapaper.bind(this));
-        document.getElementById('refresh-btn').addEventListener('click', this.refreshArticles.bind(this));
-        document.getElementById('load-more-btn').addEventListener('click', this.loadMoreArticles.bind(this));
+        console.log('🔗 Adding button click listeners...');
+        document.getElementById('back-btn').addEventListener('click', () => {
+            console.log('🔙 Back button clicked');
+            this.goBack();
+        });
+        document.getElementById('read-btn').addEventListener('click', () => {
+            console.log('📖 Read button clicked');
+            this.markAsRead();
+        });
+        document.getElementById('save-btn').addEventListener('click', () => {
+            console.log('💾 Save button clicked');
+            this.saveToInstapaper();
+        });
+        document.getElementById('refresh-btn').addEventListener('click', () => {
+            console.log('🔄 Refresh button clicked');
+            this.refreshArticles();
+        });
+        document.getElementById('load-more-btn').addEventListener('click', () => {
+            console.log('📦 Load more button clicked');
+            this.loadMoreArticles();
+        });
         
         // Touch/Mouse events will be bound to individual cards
         this.bindCardEvents();
+        console.log('✅ bindEvents() completed');
     }
 
     bindCardEvents() {
@@ -607,6 +630,13 @@ class Feedlizer {
         const card = document.querySelector('.article-card.dragging');
         if (!card) return;
         
+        // Prevent rapid repeated gestures
+        if (this.isProcessingGesture) {
+            console.log('⏳ Already processing gesture, ignoring...');
+            return;
+        }
+        this.isProcessingGesture = true;
+        
         this.isDragging = false;
         card.classList.remove('dragging');
         
@@ -619,8 +649,10 @@ class Feedlizer {
         // Determine action based on swipe direction
         if (absY > threshold && absY > absX) {
             if (this.currentPos.y < -threshold) {
+                console.log('👆 Swipe UP detected - calling saveToInstapaper()');
                 this.saveToInstapaper();
             } else if (this.currentPos.y > threshold) {
+                console.log('👇 Swipe DOWN detected - calling markAsRead()');
                 this.markAsRead();
             } else {
                 this.resetCard(card);
@@ -636,6 +668,11 @@ class Feedlizer {
         } else {
             this.resetCard(card);
         }
+        
+        // Reset gesture processing flag after action is taken
+        setTimeout(() => {
+            this.isProcessingGesture = false;
+        }, 200);
     }
 
     resetCard(card) {
@@ -671,11 +708,23 @@ class Feedlizer {
     async saveToInstapaper() {
         if (this.currentIndex >= this.articles.length) return;
         
+        const callId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        console.log('🚀 saveToInstapaper() called with ID:', callId);
+        
+        // Prevent multiple calls - debouncing protection
+        if (this.isSaving) {
+            console.log('⏳ Already saving, ignoring duplicate call:', callId);
+            return;
+        }
+        this.isSaving = true;
+        console.log('✅ Proceeding with save, ID:', callId);
+        
         const article = this.articles[this.currentIndex];
         this.animateCard('up');
         
         try {
             // Save to Read Later
+            console.log('📤 Sending POST to /api/instapaper/add, ID:', callId);
             const saveResponse = await fetch('/api/instapaper/add', {
                 method: 'POST',
                 headers: {
@@ -685,17 +734,31 @@ class Feedlizer {
                     id: article.id,
                     url: article.originUrl || article.canonicalUrl,
                     title: article.title,
-                    description: article.summary?.content || article.summary
+                    description: article.summary?.content || article.summary,
+                    callId: callId  // Add unique ID for tracking
                 })
             });
             
             if (!saveResponse.ok) {
+                if (saveResponse.status === 401) {
+                    const errorData = await saveResponse.json();
+                    if (errorData.needLogin) {
+                        this.showToast('🔒 Sesja wygasła - zaloguj się ponownie', 'warning');
+                        showLoginModal();
+                        return;
+                    }
+                }
                 throw new Error('Failed to save article');
             }
 
             // Mark as read simultaneously
+            console.log('📤 Sending POST to /api/feedly/mark-read, ID:', callId);
             const readResponse = await fetch(`/api/feedly/mark-read/${encodeURIComponent(article.id)}`, {
-                method: 'POST'
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ callId: callId })
             });
 
             if (readResponse.ok) {
@@ -709,6 +772,10 @@ class Feedlizer {
         } catch (error) {
             console.error('Error saving article:', error);
             this.showToast('❌ Błąd podczas zapisywania', 'error');
+        } finally {
+            // Reset saving flag
+            console.log('🏁 saveToInstapaper() finished, resetting flag, ID:', callId);
+            this.isSaving = false;
         }
         
         this.nextArticle();
@@ -720,22 +787,50 @@ class Feedlizer {
     async markAsRead() {
         if (this.currentIndex >= this.articles.length) return;
         
+        const callId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        console.log('🚀 markAsRead() called with ID:', callId);
+        
+        // Prevent multiple calls - debouncing protection
+        if (this.isMarking) {
+            console.log('⏳ Already marking as read, ignoring duplicate call:', callId);
+            return;
+        }
+        this.isMarking = true;
+        console.log('✅ Proceeding with mark as read, ID:', callId);
+        
         const article = this.articles[this.currentIndex];
         this.animateCard('down');
         
         try {
+            console.log('📤 Sending POST to /api/feedly/mark-read (standalone), ID:', callId);
             const response = await fetch(`/api/feedly/mark-read/${encodeURIComponent(article.id)}`, {
-                method: 'POST'
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ callId: callId })
             });
             
             if (response.ok) {
                 this.showToast('✅ Oznaczono jako przeczytane', 'success');
+            } else if (response.status === 401) {
+                const errorData = await response.json();
+                if (errorData.needLogin) {
+                    this.showToast('🔒 Sesja wygasła - zaloguj się ponownie', 'warning');
+                    showLoginModal();
+                    return;
+                }
+                throw new Error('Failed to mark as read');
             } else {
                 throw new Error('Failed to mark as read');
             }
         } catch (error) {
             console.error('Error marking as read:', error);
             this.showToast('❌ Błąd podczas oznaczania', 'error');
+        } finally {
+            // Reset marking flag
+            console.log('🏁 markAsRead() finished, resetting flag, ID:', callId);
+            this.isMarking = false;
         }
         
         this.nextArticle();
@@ -750,12 +845,20 @@ class Feedlizer {
             return;
         }
         
+        // Prevent rapid back navigation that can cause UI glitches
+        if (this.isNavigating) {
+            console.log('⏳ Already navigating, ignoring back request');
+            return;
+        }
+        this.isNavigating = true;
+        
         this.currentIndex = this.history.pop();
         this.animateCard('left');
         
         setTimeout(() => {
             this.renderCards();
             this.updateStats();
+            this.isNavigating = false;  // Reset flag after UI updates
         }, 250);
         
         this.showToast('↩️ Cofnięto do poprzedniego', 'info');
@@ -912,11 +1015,6 @@ class Feedlizer {
     }
 }
 
-// Initialize app when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.feedlizer = new Feedlizer();
-});
-
 // Global function for retry button
 function loadArticles() {
     if (window.feedlyTinder) {
@@ -988,6 +1086,13 @@ function showLoginModal() {
 // Setup on page load
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🎯 DOM loaded, setting up application...');
+    
+    // Prevent multiple initialization
+    if (window.feedlyTinder) {
+        console.log('⚠️ Feedlizer already initialized, skipping...');
+        return;
+    }
+    
     setupLoginModal();
     
     // Initialize Feedlizer app

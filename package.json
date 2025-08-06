@@ -1,6 +1,6 @@
 {
   "name": "feedlizer",
-  "version": "0.6.0",
+  "version": "0.7.1",
   "description": "Feedlizer - Tinder-like interface for Feedly articles with enhanced functionality",
   "main": "server.js",
   "scripts": {
