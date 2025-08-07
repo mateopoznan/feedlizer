@@ -1,6 +1,36 @@
 // Feedlizer App - Main JavaScript
 console.log('🚀 app.js loaded!');
 
+// Polyfill for roundRect (for older browsers)
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
+        if (typeof radius === 'undefined') {
+            radius = 5;
+        }
+        if (typeof radius === 'number') {
+            radius = {tl: radius, tr: radius, br: radius, bl: radius};
+        } else {
+            const defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
+            for (const side in defaultRadius) {
+                radius[side] = radius[side] || defaultRadius[side];
+            }
+        }
+        
+        this.beginPath();
+        this.moveTo(x + radius.tl, y);
+        this.lineTo(x + width - radius.tr, y);
+        this.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+        this.lineTo(x + width, y + height - radius.br);
+        this.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+        this.lineTo(x + radius.bl, y + height);
+        this.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+        this.lineTo(x, y + radius.tl);
+        this.quadraticCurveTo(x, y, x + radius.tl, y);
+        this.closePath();
+        return this;
+    };
+}
+
 // PWA detection and link handling
 function isPWA() {
     return window.matchMedia('(display-mode: standalone)').matches || 
@@ -230,6 +260,10 @@ class Feedlizer {
         document.getElementById('load-more-btn').addEventListener('click', () => {
             console.log('📦 Load more button clicked');
             this.loadMoreArticles();
+        });
+        document.getElementById('news-generator-btn').addEventListener('click', () => {
+            console.log('📰 News generator button clicked');
+            this.showNewsGenerator();
         });
         
         // Touch/Mouse events will be bound to individual cards
@@ -1012,6 +1046,400 @@ class Feedlizer {
                 }
             }, 300);
         }, 3000);
+    }
+
+    // mateoNEWS Generator functionality
+    showNewsGenerator() {
+        const modal = document.getElementById('newsGeneratorModal');
+        modal.classList.remove('hidden');
+        
+        // Setup event listeners for the generator
+        this.setupNewsGeneratorEvents();
+        
+        // Try to populate with current article data if available
+        this.populateFromCurrentArticle();
+    }
+
+    setupNewsGeneratorEvents() {
+        // Avoid duplicate event listeners
+        if (this.newsGeneratorEventsSetup) return;
+        this.newsGeneratorEventsSetup = true;
+
+        // Close button
+        document.getElementById('closeNewsGenerator').addEventListener('click', () => {
+            document.getElementById('newsGeneratorModal').classList.add('hidden');
+        });
+
+        // Background selection
+        document.querySelectorAll('.bg-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.bg-option').forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+            });
+        });
+
+        // Generate button
+        document.getElementById('generateNewsImage').addEventListener('click', () => {
+            this.generateNewsImage();
+        });
+
+        // Download button
+        const downloadBtn = document.getElementById('downloadNewsImage');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', () => {
+                console.log('📥 Download button clicked');
+                this.downloadNewsImage();
+            });
+            console.log('✅ Download button event listener added');
+        } else {
+            console.error('❌ Download button not found!');
+        }
+
+        // Copy URL button
+        document.getElementById('copyArticleUrl').addEventListener('click', () => {
+            this.copyArticleUrl();
+        });
+
+        // Instagram Stories button
+        const instagramBtn = document.getElementById('shareToInstagram');
+        if (instagramBtn) {
+            instagramBtn.addEventListener('click', () => {
+                console.log('📱 Instagram button clicked');
+                this.shareToInstagram();
+            });
+            console.log('✅ Instagram button event listener added');
+        } else {
+            console.error('❌ Instagram button not found!');
+        }
+
+        // Select first background by default
+        document.querySelector('.bg-option').classList.add('selected');
+    }
+
+    populateFromCurrentArticle() {
+        if (this.currentIndex < this.articles.length) {
+            const article = this.articles[this.currentIndex];
+            
+            document.getElementById('newsTitle').value = article.title || '';
+            document.getElementById('newsDescription').value = 
+                (article.summary?.content || article.summary || '').replace(/<[^>]*>/g, '').substring(0, 200);
+            document.getElementById('newsUrl').value = article.originUrl || article.canonicalUrl || '';
+            document.getElementById('newsImage').value = article.visual?.url || article.visual || '';
+        }
+    }
+
+    async generateNewsImage() {
+        const canvas = document.getElementById('newsCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Get form data
+        const title = document.getElementById('newsTitle').value;
+        const description = document.getElementById('newsDescription').value;
+        const url = document.getElementById('newsUrl').value;
+        const imageUrl = document.getElementById('newsImage').value;
+        const selectedBg = document.querySelector('.bg-option.selected')?.dataset.bg || 'mateoNEWS1.png';
+        
+        if (!title) {
+            this.showToast('❌ Tytuł jest wymagany', 'error');
+            return;
+        }
+
+        try {
+            // Clear canvas
+            ctx.clearRect(0, 0, 1080, 1920);
+            
+            // Load and draw background
+            const bgImage = await this.loadImage(`http://x.mateopoznan.pl/${selectedBg}`);
+            ctx.drawImage(bgImage, 0, 0, 1080, 1920);
+            
+            // Load and draw article image if provided
+            if (imageUrl) {
+                console.log('🖼️ Attempting to load article image:', imageUrl);
+                try {
+                    const articleImage = await this.loadImage(imageUrl);
+                    console.log('🖼️ Article image loaded, dimensions:', articleImage.width, 'x', articleImage.height);
+                    
+                    // Draw image in the designated area
+                    const imageX = 80;
+                    const imageY = 400;
+                    const imageWidth = 920;
+                    const imageHeight = 500;
+                    
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.roundRect(imageX, imageY, imageWidth, imageHeight, 20);
+                    ctx.clip();
+                    
+                    // Scale and center the image
+                    const scale = Math.max(imageWidth / articleImage.width, imageHeight / articleImage.height);
+                    const scaledWidth = articleImage.width * scale;
+                    const scaledHeight = articleImage.height * scale;
+                    const offsetX = (imageWidth - scaledWidth) / 2;
+                    const offsetY = (imageHeight - scaledHeight) / 2;
+                    
+                    ctx.drawImage(articleImage, imageX + offsetX, imageY + offsetY, scaledWidth, scaledHeight);
+                    ctx.restore();
+                    console.log('✅ Article image drawn successfully');
+                } catch (error) {
+                    console.warn('❌ Could not load article image:', error);
+                    // Draw placeholder
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                    ctx.fillRect(80, 400, 920, 500);
+                    ctx.fillStyle = '#666666';
+                    ctx.font = '32px Inter, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('📸 Obrazek niedostępny', 540, 650);
+                    ctx.textAlign = 'left';
+                }
+            } else {
+                console.log('ℹ️ No article image provided');
+            }
+            
+            // Draw title with background
+            ctx.font = 'bold 56px Inter, sans-serif';
+            ctx.textAlign = 'left';
+            
+            const titleLines = this.wrapText(ctx, title, 920);
+            let titleY = 1000;
+            
+            // Calculate title dimensions for better centering
+            const titleHeight = titleLines.length * 70;
+            const titleBgPadding = 25;
+            const titleBgHeight = titleHeight + (titleBgPadding * 2);
+            
+            // Draw semi-transparent background for title (70% opacity)
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.beginPath();
+            ctx.roundRect(60, titleY - titleBgPadding - 35, 960, titleBgHeight, 15);
+            ctx.fill();
+            
+            // Draw title text (centered vertically in the background)
+            ctx.fillStyle = '#FFFFFF';
+            titleLines.forEach((line, index) => {
+                ctx.fillText(line, 80, titleY + (index * 70));
+            });
+            
+            // Draw description with background
+            if (description) {
+                ctx.font = '32px Inter, sans-serif';
+                
+                const descLines = this.wrapText(ctx, description, 920);
+                let descY = titleY + titleHeight + 60;
+                
+                // Calculate description dimensions for better centering
+                const descHeight = descLines.length * 40;
+                const descBgPadding = 20;
+                const descBgHeight = descHeight + (descBgPadding * 2);
+                
+                // Draw semi-transparent background for description (70% opacity)
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.beginPath();
+                ctx.roundRect(60, descY - descBgPadding - 20, 960, descBgHeight, 12);
+                ctx.fill();
+                
+                // Draw description text (centered vertically in the background)
+                ctx.fillStyle = '#E0E0E0';
+                descLines.forEach((line, index) => {
+                    ctx.fillText(line, 80, descY + (index * 40));
+                });
+            }
+            
+            // Draw URL if provided
+            if (url) {
+                const urlY = 1780;
+                ctx.fillStyle = '#B0B0B0';
+                ctx.font = '28px Inter, sans-serif';
+                
+                // Create a rounded rectangle for URL background
+                const urlBg = { x: 80, y: urlY - 35, width: 920, height: 50 };
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.beginPath();
+                ctx.roundRect(urlBg.x, urlBg.y, urlBg.width, urlBg.height, 10);
+                ctx.fill();
+                
+                // Draw URL text
+                ctx.fillStyle = '#FFFFFF';
+                const displayUrl = url.replace(/^https?:\/\//, '').substring(0, 50);
+                ctx.fillText('🔗 ' + displayUrl, 100, urlY);
+            }
+            
+            // Enable download button
+            document.getElementById('downloadNewsImage').disabled = false;
+            document.getElementById('shareToInstagram').disabled = false;
+            
+            // Show canvas
+            canvas.style.display = 'block';
+            
+            this.showToast('✅ Grafika wygenerowana!', 'success');
+            
+        } catch (error) {
+            console.error('❌ Error generating image:', error);
+            this.showToast(`❌ Błąd podczas generowania grafiki: ${error.message}`, 'error');
+        }
+    }
+
+    loadImage(src) {
+        return new Promise((resolve, reject) => {
+            console.log('🔄 Attempting to load image:', src);
+            
+            // Check if it's an external URL that needs proxying
+            const needsProxy = src.startsWith('http') && 
+                              !src.includes('localhost') && 
+                              !src.includes('127.0.0.1') &&
+                              !src.includes('x.mateopoznan.pl'); // Our backgrounds don't need proxy
+            
+            let imageUrl = src;
+            
+            if (needsProxy) {
+                // Use our image proxy
+                imageUrl = `/api/image-proxy?url=${encodeURIComponent(src)}`;
+                console.log('🔄 Using image proxy:', imageUrl);
+            }
+            
+            const img = new Image();
+            
+            // Don't set CORS for proxy requests since they're from our domain
+            if (!needsProxy) {
+                img.crossOrigin = 'anonymous';
+            }
+            
+            img.onload = () => {
+                console.log('✅ Image loaded successfully:', src);
+                resolve(img);
+            };
+            
+            img.onerror = (error) => {
+                console.error('❌ Failed to load image:', src, error);
+                
+                if (needsProxy) {
+                    // If proxy failed, try original URL as fallback
+                    console.log('🔄 Proxy failed, trying original URL:', src);
+                    
+                    const fallbackImg = new Image();
+                    fallbackImg.crossOrigin = 'anonymous';
+                    
+                    fallbackImg.onload = () => {
+                        console.log('✅ Fallback image loaded:', src);
+                        resolve(fallbackImg);
+                    };
+                    
+                    fallbackImg.onerror = () => {
+                        console.error('❌ Complete failure loading image:', src);
+                        reject(new Error(`Failed to load image: ${src}`));
+                    };
+                    
+                    fallbackImg.src = src;
+                } else {
+                    reject(new Error(`Failed to load image: ${src}`));
+                }
+            };
+            
+            img.src = imageUrl;
+        });
+    }
+
+    wrapText(ctx, text, maxWidth) {
+        const words = text.split(' ');
+        const lines = [];
+        let currentLine = '';
+
+        words.forEach(word => {
+            const testLine = currentLine + (currentLine ? ' ' : '') + word;
+            const metrics = ctx.measureText(testLine);
+            
+            if (metrics.width > maxWidth && currentLine) {
+                lines.push(currentLine);
+                currentLine = word;
+            } else {
+                currentLine = testLine;
+            }
+        });
+        
+        if (currentLine) {
+            lines.push(currentLine);
+        }
+        
+        return lines;
+    }
+
+    downloadNewsImage() {
+        console.log('🎯 downloadNewsImage() called');
+        const canvas = document.getElementById('newsCanvas');
+        
+        if (!canvas) {
+            this.showToast('❌ Najpierw wygeneruj grafikę', 'error');
+            return;
+        }
+        
+        try {
+            const link = document.createElement('a');
+            link.download = `mateoNEWS_${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            this.showToast('📥 Grafika pobrana!', 'success');
+        } catch (error) {
+            console.error('❌ Download error:', error);
+            this.showToast('❌ Nie można pobrać grafiki. Zrób screenshot (Ctrl+Shift+S)', 'error');
+        }
+    }
+
+    async copyArticleUrl() {
+        const url = document.getElementById('newsUrl').value;
+        
+        if (!url) {
+            // Try to get URL from current article
+            if (this.currentIndex < this.articles.length) {
+                const article = this.articles[this.currentIndex];
+                const articleUrl = article.originUrl || article.canonicalUrl || '';
+                if (articleUrl) {
+                    document.getElementById('newsUrl').value = articleUrl;
+                    await this.copyToClipboard(articleUrl);
+                    return;
+                }
+            }
+            this.showToast('❌ Brak URL do skopiowania', 'error');
+            return;
+        }
+        
+        await this.copyToClipboard(url);
+    }
+
+    async copyToClipboard(text) {
+        try {
+            await navigator.clipboard.writeText(text);
+            this.showToast('📋 URL skopiowany do schowka!', 'success');
+        } catch (error) {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                this.showToast('📋 URL skopiowany do schowka!', 'success');
+            } catch (fallbackError) {
+                this.showToast('❌ Nie udało się skopiować URL', 'error');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+    }
+
+    async shareToInstagram() {
+        console.log('🎯 shareToInstagram() called');
+        
+        // Próbujemy automatycznie pobrać, a użytkownik może sam udostępnić
+        try {
+            this.downloadNewsImage();
+            this.showToast('📱 Grafika pobrana! Teraz możesz ją ręcznie dodać do Instagram Stories', 'info');
+        } catch (error) {
+            this.showToast('📱 Zrób screenshot (Ctrl+Shift+S) i dodaj do Instagram Stories', 'info');
+        }
     }
 }
 

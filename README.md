@@ -1,8 +1,8 @@
-# 📱 Feedlizer v0.2
+# 📱 Feedlizer v0.9
 
 > Tinder dla artykułów z Feedly - swipuj przez swoje newsy jak na randkach!
 
-## ✨ Funkcje
+## ✨ Funkcje v0.9
 
 - **🔥 Swipe gestures**: Przeciągnij w górę aby zapisać, w dół aby oznaczać jako przeczytane
 - **⌨️ Keyboard shortcuts**: Strzałki + R do odświeżania
@@ -10,6 +10,10 @@
 - **📱 Responsive**: Działa na PC i mobile
 - **🎯 Toast notifications**: Feedback dla każdej akcji
 - **🔐 Simple authentication**: Opcjonalne zabezpieczenie hasłem
+- **📸 Image proxy cache**: Serwerowy cache dla obrazków (24h TTL)
+- **🎨 mateoNEWS generator**: Generowanie grafik Instagram Stories z Canvas API
+- **📚 Instapaper integration**: Bezpośrednie zapisywanie do Instapaper
+- **🚫 Duplicate prevention**: Zaawansowany system deduplicacji requestów
 
 ## 🚀 Szybki start
 

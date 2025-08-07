@@ -245,7 +245,7 @@ class FeedlyAPI {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${this.token}`,
-                    'User-Agent': 'FeedlyTinder/1.0'
+                    'User-Agent': 'Feedlizer/0.9'
                 }
             };
 
@@ -293,7 +293,7 @@ class FeedlyAPI {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${this.token}`,
-                    'User-Agent': 'FeedlyTinder/1.0'
+                    'User-Agent': 'Feedlizer/0.9'
                 }
             };
 
@@ -341,7 +341,7 @@ class FeedlyAPI {
                     'Authorization': `Bearer ${this.token}`,
                     'Content-Type': 'application/json',
                     'Content-Length': postData.length,
-                    'User-Agent': 'FeedlyTinder/1.0'
+                    'User-Agent': 'Feedlizer/0.9'
                 }
             };
 
@@ -383,7 +383,7 @@ class FeedlyAPI {
                     'Authorization': `Bearer ${this.token}`,
                     'Content-Type': 'application/json',
                     'Content-Length': postData.length,
-                    'User-Agent': 'FeedlyTinder/1.0'
+                    'User-Agent': 'Feedlizer/0.9'
                 }
             };
 
@@ -415,7 +415,7 @@ class FeedlyAPI {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${this.token}`,
-                    'User-Agent': 'FeedlyTinder/1.0'
+                    'User-Agent': 'Feedlizer/0.9'
                 }
             };
 
@@ -727,6 +727,93 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
+    // Image proxy endpoint for caching external images
+    if (pathname === '/api/image-proxy' && req.method === 'GET') {
+        const imageUrl = parsedUrl.query.url;
+        
+        if (!imageUrl) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Missing URL parameter' }));
+            return;
+        }
+
+        try {
+            // Create hash of URL for cache filename
+            const urlHash = crypto.createHash('md5').update(imageUrl).digest('hex');
+            const cacheDir = path.join(__dirname, 'cache', 'images');
+            const cacheFile = path.join(cacheDir, `${urlHash}.cache`);
+            const metaFile = path.join(cacheDir, `${urlHash}.meta`);
+            
+            // Check if cached version exists and is fresh (24h)
+            if (fs.existsSync(cacheFile) && fs.existsSync(metaFile)) {
+                const stats = fs.statSync(cacheFile);
+                const age = Date.now() - stats.mtime.getTime();
+                const maxAge = 24 * 60 * 60 * 1000; // 24 hours
+                
+                if (age < maxAge) {
+                    console.log(`📸 Serving cached image: ${imageUrl}`);
+                    const meta = JSON.parse(fs.readFileSync(metaFile, 'utf8'));
+                    
+                    res.writeHead(200, {
+                        'Content-Type': meta.contentType || 'image/jpeg',
+                        'Access-Control-Allow-Origin': '*',
+                        'Cache-Control': 'public, max-age=86400'
+                    });
+                    
+                    const imageStream = fs.createReadStream(cacheFile);
+                    imageStream.pipe(res);
+                    return;
+                }
+            }
+            
+            // Download and cache the image
+            console.log(`📥 Downloading and caching image: ${imageUrl}`);
+            
+            const response = await axios({
+                url: imageUrl,
+                method: 'GET',
+                responseType: 'stream',
+                timeout: 10000,
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (compatible; mateoNEWS/1.0)'
+                }
+            });
+            
+            // Ensure cache directory exists
+            if (!fs.existsSync(cacheDir)) {
+                fs.mkdirSync(cacheDir, { recursive: true });
+            }
+            
+            // Save metadata
+            const meta = {
+                contentType: response.headers['content-type'] || 'image/jpeg',
+                originalUrl: imageUrl,
+                cachedAt: new Date().toISOString()
+            };
+            fs.writeFileSync(metaFile, JSON.stringify(meta));
+            
+            // Set response headers
+            res.writeHead(200, {
+                'Content-Type': meta.contentType,
+                'Access-Control-Allow-Origin': '*',
+                'Cache-Control': 'public, max-age=86400'
+            });
+            
+            // Pipe to both cache file and response
+            const cacheStream = fs.createWriteStream(cacheFile);
+            response.data.pipe(cacheStream);
+            response.data.pipe(res);
+            
+            console.log(`✅ Image cached and served: ${imageUrl}`);
+            
+        } catch (error) {
+            console.error(`❌ Error proxying image ${imageUrl}:`, error.message);
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Failed to fetch image' }));
+        }
+        return;
+    }
+
     // Static file serving
     let filePath = pathname === '/' ? '/public/index.html' : `/public${pathname}`;
     
@@ -770,9 +857,10 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`🚀 Feedly Token-based Tinder Server running on http://localhost:${PORT}`);
+    console.log(`🚀 Feedlizer v0.9 Server running on http://localhost:${PORT}`);
     console.log(`📱 Open in browser to start swiping articles!`);
     console.log(`🌐 Available at: feedly.mateopoznan.pl (with Caddy proxy)`);
+    console.log(`🖼️  Features: Image proxy cache, mateoNEWS generator, Instapaper integration`);
     console.log('');
     
     if (feedlyToken) {
