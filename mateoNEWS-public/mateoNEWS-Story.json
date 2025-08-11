@@ -1,0 +1,40 @@
+{
+  "WFWorkflowActions": [
+    {
+      "WFWorkflowActionIdentifier": "is.workflow.actions.detect.link",
+      "WFWorkflowActionParameters": {}
+    },
+    {
+      "WFWorkflowActionIdentifier": "is.workflow.actions.text",
+      "WFWorkflowActionParameters": {
+        "WFTextActionText": "https://news.mateopoznan.pl/admin?url="
+      }
+    },
+    {
+      "WFWorkflowActionIdentifier": "is.workflow.actions.text.combine",
+      "WFWorkflowActionParameters": {
+        "WFTextSeparator": ""
+      }
+    },
+    {
+      "WFWorkflowActionIdentifier": "is.workflow.actions.openurl",
+      "WFWorkflowActionParameters": {}
+    }
+  ],
+  "WFWorkflowClientRelease": "2.2.2",
+  "WFWorkflowClientVersion": "2302.0.4",
+  "WFWorkflowHasShortcutInputVariables": true,
+  "WFWorkflowIcon": {
+    "WFWorkflowIconGlyphNumber": 59511,
+    "WFWorkflowIconStartColor": 2071128319
+  },
+  "WFWorkflowImportQuestions": [],
+  "WFWorkflowInputContentItemClasses": [
+    "WFURLContentItem"
+  ],
+  "WFWorkflowMinimumClientVersion": 900,
+  "WFWorkflowMinimumClientVersionString": "900",
+  "WFWorkflowTypes": [
+    "ActionExtension"
+  ]
+}

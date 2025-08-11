@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedlizer - Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .debug { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        button { padding: 10px 20px; margin: 5px; background: #007cba; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Feedlizer JavaScript Test</h1>
+    
+    <div class="debug">
+        <h3>Debug Log:</h3>
+        <div id="debug-log"></div>
+    </div>
+    
+    <button onclick="testAPI()">Testuj API</button>
+    <button onclick="testElements()">Testuj elementy HTML</button>
+    
+    <div id="results"></div>
+    
+    <script>
+        function log(message) {
+            console.log(message);
+            const debugLog = document.getElementById('debug-log');
+            debugLog.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+        }
+        
+        log('🚀 Test page loaded');
+        
+        async function testAPI() {
+            try {
+                log('🔄 Testing API...');
+                const response = await fetch('/api/feedly/stream?count=3');
+                log('📡 Response status: ' + response.status);
+                
+                if (!response.ok) {
+                    log('❌ Response not OK: ' + response.status + ' ' + response.statusText);
+                    return;
+                }
+                
+                const data = await response.json();
+                log('✅ API Response received');
+                log('📊 Articles count: ' + (data.items ? data.items.length : 'NO ITEMS'));
+                
+                if (data.items && data.items.length > 0) {
+                    log('🎯 First article: ' + data.items[0].title);
+                }
+                
+                document.getElementById('results').innerHTML = '<pre>' + JSON.stringify(data, null, 2).substring(0, 1000) + '...</pre>';
+                
+            } catch (error) {
+                log('💥 API Error: ' + error.message);
+            }
+        }
+        
+        function testElements() {
+            log('🔍 Testing HTML elements...');
+            
+            const elements = ['loading-screen', 'error-screen', 'main-content', 'card-stack'];
+            elements.forEach(id => {
+                const element = document.getElementById(id);
+                log('Element #' + id + ': ' + (element ? '✅ Found' : '❌ Not found'));
+            });
+        }
+        
+        // Auto test na start
+        setTimeout(() => {
+            log('🚀 Auto-testing...');
+            testElements();
+            testAPI();
+        }, 1000);
+    </script>
+</body>
+</html>

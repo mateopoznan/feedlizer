@@ -1,0 +1,44 @@
+{
+  "name": "Feedlizer",
+  "short_name": "Feedlizer",
+  "description": "Tinder for RSS Articles - Swipe your way through the news!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#4CAF50",
+  "orientation": "portrait",
+  "categories": ["news", "productivity"],
+  "icons": [
+    {
+      "src": "https://feedly.com/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "https://feedly.com/favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot1.png",
+      "sizes": "390x844",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Refresh Articles",
+      "short_name": "Refresh",
+      "description": "Load fresh articles from Feedly",
+      "url": "/?action=refresh",
+      "icons": [
+        {
+          "src": "https://feedly.com/favicon.ico",
+          "sizes": "32x32"
+        }
+      ]
+    }
+  ]
+}

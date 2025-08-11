@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mateoNEWS Admin v0.7.1 alfa</title>
+    <!-- Wyłącz cache dla generatora story -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="stylesheet" href="styles.css?v=20250808-1952&nocache=1">
+    <link rel="icon" type="image/png" href="https://x.mateopoznan.pl/mateo%20news-2.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" href="http://x.mateopoznan.pl/mateoNEWS.png" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="http://x.mateopoznan.pl/mateoNEWS.png" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="https://x.mateopoznan.pl/mateo%20news-2.png" media="(prefers-color-scheme: light)">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2196F3" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="mateoNEWS">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-itunes-app" content="app-argument=mateonews://admin">
+    <!-- Apple URL Schemes -->
+    <meta name="apple-mobile-web-app-orientation-style" content="default">
+    <link rel="canonical" href="/admin">
+    <style>
+        .status-messages {
+            margin: 16px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .status-message {
+            transition: all 0.3s ease;
+        }
+        
+        .status-icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        
+        .status-text {
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .instagram-btn {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 8px;
+        }
+        
+        .instagram-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(240, 148, 51, 0.4);
+        }
+        
+        .instagram-btn:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="http://x.mateopoznan.pl/mateoNEWS.png" alt="mateoNEWS" width="40" height="40">
+                <h1>Story Generator v0.7.1 alfa <small style="font-size: 12px; color: #666;">(2025.08.08-19:52) 🚫💾</small></h1>
+            </div>
+            <nav>
+                <a href="/">Główna</a>
+                <a href="/ciekawe">Ciekawe</a>
+                <a href="/admin" class="active">Story Generator</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="story-generator">
+                <h2>🎨 Generator Instagram Stories</h2>
+                <p>Wygeneruj profesjonalną grafikę z dowolnym artykułem dla Instagram Stories</p>
+                
+                <div class="url-input-section">
+                    <h3>📝 Wprowadź dane artykułu:</h3>
+                    <div class="input-group">
+                        <label for="article-url">URL artykułu:</label>
+                        <input type="url" id="article-url" placeholder="https://example.com/article" class="url-input">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="article-title">Tytuł (opcjonalny):</label>
+                        <input type="text" id="article-title" placeholder="Zostaw puste aby automatycznie pobrać" class="title-input">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="article-description">Opis (opcjonalny):</label>
+                        <textarea id="article-description" placeholder="Zostaw puste aby automatycznie pobrać" class="desc-input"></textarea>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Wybierz tło:</label>
+                        <div class="bg-selector">
+                            <div class="bg-option selected" data-bg="mateoNEWS1.png">
+                                <img src="http://x.mateopoznan.pl/mateoNEWS1.png" alt="Standard">
+                                <span>Standard</span>
+                            </div>
+                            <div class="bg-option" data-bg="mateoNEWSpilne.png">
+                                <img src="http://x.mateopoznan.pl/mateoNEWSpilne.png" alt="Pilne">
+                                <span>Pilne</span>
+                            </div>
+                            <div class="bg-option" data-bg="mateoNEWSwazne.png">
+                                <img src="http://x.mateopoznan.pl/mateoNEWSwazne.png" alt="Ważne">
+                                <span>Ważne</span>
+                            </div>
+                            <div class="bg-option" data-bg="mateoNEWSopinia.png">
+                                <img src="http://x.mateopoznan.pl/mateoNEWSopinia.png" alt="Opinia">
+                                <span>Opinia</span>
+                            </div>
+                            <div class="bg-option" data-bg="mateoNEWSpublicystyka.png">
+                                <img src="http://x.mateopoznan.pl/mateoNEWSpublicystyka.png" alt="Publicystyka">
+                                <span>Publicystyka</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="story-controls">
+                    <button type="button" onclick="generateStoryFromUrl()" class="generate-btn">
+                        🎨 Generuj Story z URL
+                    </button>
+                    
+                    
+                    <div class="loading" id="story-loading" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>Generowanie story...</p>
+                    </div>
+                    
+                    <!-- Status messages -->
+                    <div id="status-messages" class="status-messages"></div>
+                </div>
+
+                <div class="story-preview" id="story-preview" style="display: none;">
+                    <h3>👁️ Podgląd Story:</h3>
+                    <canvas id="story-canvas" width="1080" height="1920" style="max-width: 300px; border: 1px solid var(--border); border-radius: 8px;"></canvas>
+                    <div class="story-actions">
+                    <ul>
+                        <li>Wprowadź URL artykułu aby automatycznie pobrać tytuł i obraz</li>
+                        <li>Możesz edytować tytuł i opis przed generowaniem</li>
+                        <li>Grafika ma format 1080x1920 (Instagram Stories)</li>
+                        <li>Dostępne różne tła: Standard, Pilne, Ważne, Opinia, Publicystyka</li>
+                        <li>Użyj przycisku Instagram do bezpośredniego udostępnienia</li>
+                    </ul>
+                    <div style="margin: 20px 0; display: flex; gap: 16px; flex-wrap: wrap;">
+                        <button class="instagram-btn" onclick="downloadStory()">⬇️ Pobierz Story</button>
+                        <button class="instagram-btn" onclick="shareToInstagram()">📲 Udostępnij na Instagram Stories</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js?v=20250808-1941"></script>
+    <script>
+        // Register service worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+        // Register service worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js');
+            });
+        }
+
+        // Status message system
+        function showStatus(message, type = 'info') {
+            const container = document.getElementById('status-messages');
+            if (!container) return;
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `status-message status-${type}`;
+            statusDiv.innerHTML = `<span class="status-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '🔄' : 'ℹ️'}</span><span class="status-text">${message}</span>`;
+            container.appendChild(statusDiv);
+            setTimeout(() => {
+                if (statusDiv.parentNode) statusDiv.parentNode.removeChild(statusDiv);
+            }, 5000);
+        }
+
+        // --- DODAJEMY LOKALNĄ FUNKCJĘ generateStoryFromUrl ---
+        function generateStoryFromUrl() {
+            const urlInput = document.getElementById('article-url');
+            const titleInput = document.getElementById('article-title');
+            const descInput = document.getElementById('article-description');
+            const selectedBgOption = document.querySelector('.bg-option.selected');
+
+            const url = urlInput ? urlInput.value.trim() : '';
+            const title = titleInput ? titleInput.value.trim() : '';
+            const description = descInput ? descInput.value.trim() : '';
+            const background = selectedBgOption ? selectedBgOption.dataset.bg : 'mateoNEWS1.png';
+
+            if (!url) {
+                showStatus('❌ Brak URL artykułu!', 'error');
+                return;
+            }
+
+            // Pobierz dane artykułu z API, jeśli tytuł lub opis są puste
+            let article = { url, title, description, background };
+            if (!title || !description) {
+                fetch(`/api/extract-article?url=${encodeURIComponent(url)}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        article.title = title || data.title || '';
+                        article.description = description || data.description || '';
+                        article.image = data.image || '';
+                        generateStoryWithCustomArticle(article);
+                    })
+                    .catch(() => {
+                        showStatus('❌ Nie udało się pobrać danych artykułu', 'error');
+                        generateStoryWithCustomArticle(article);
+                    });
+            } else {
+                generateStoryWithCustomArticle(article);
+            }
+        }
+
+        // Autofill from bookmarklet/shortcut (old, proven version)
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sharedUrl = urlParams.get('url');
+            const sharedTitle = urlParams.get('title');
+            const sharedText = urlParams.get('text');
+            if (sharedUrl) {
+                const urlInput = document.getElementById('article-url');
+                if (urlInput) {
+                    urlInput.value = decodeURIComponent(sharedUrl);
+                    showStatus('🔗 URL załadowany z udostępnienia!', 'success');
+                }
+                if (sharedTitle || sharedText) {
+                    const titleInput = document.getElementById('article-title');
+                    if (titleInput) {
+                        titleInput.value = decodeURIComponent(sharedTitle || sharedText);
+                    }
+                }
+                // Czekaj aż generateStoryWithCustomArticle będzie dostępna
+                let tries = 0;
+                function tryAutofill() {
+                    if (typeof window.generateStoryFromUrl === 'function' && typeof window.generateStoryWithCustomArticle === 'function') {
+                        window.generateStoryFromUrl();
+                    } else if (tries < 30) { // max 3 sekundy
+                        tries++;
+                        setTimeout(tryAutofill, 100);
+                    } else {
+                        showStatus('❌ Nie udało się uruchomić autofill (funkcja niedostępna)', 'error');
+                    }
+                }
+                tryAutofill();
+            }
+        });
+
+        // Global variable to store last article data for regeneration
+        let lastArticleData = null;
+        function clearStatus() {
+            const container = document.getElementById('status-messages');
+            if (container) container.innerHTML = '';
+        }
+// --- WYMUSZENIE GLOBALNOŚCI generateStoryWithCustomArticle ---
+window.generateStoryWithCustomArticle = async function(article) {
+    console.log('🎬 Starting inline generateStoryWithCustomArticle...');
+    showStatus('🎬 Rozpoczynam generowanie story...', 'info');
+    lastArticleData = article;
+    try {
+        let canvas = document.getElementById('story-canvas');
+        if (!canvas) {
+            canvas = document.createElement('canvas');
+            canvas.id = 'story-canvas';
+            canvas.width = 1080;
+            canvas.height = 1920;
+            canvas.style.maxWidth = '300px';
+            canvas.style.border = '1px solid #ccc';
+            const previewDiv = document.getElementById('story-preview');
+            if (previewDiv) {
+                previewDiv.appendChild(canvas);
+            } else {
+                document.body.appendChild(canvas);
+            }
+        }
+        canvas.width = 1080;
+        canvas.height = 1920;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+            throw new Error('Cannot get 2D context from canvas');
+        }
+        showStatus('✅ Canvas utworzony', 'success');
+        ctx.clearRect(0, 0, 1080, 1920);
+        const selectedBg = article.background || 'mateoNEWS1.png';
+        showStatus('Loading background: ' + selectedBg, 'info');
+        try {
+            const bgImage = new Image();
+            bgImage.crossOrigin = 'anonymous';
+            await new Promise((resolve, reject) => {
+                bgImage.onload = () => {
+                    ctx.drawImage(bgImage, 0, 0, 1080, 1920);
+                    showStatus('✅ Tło załadowane', 'success');
+                    resolve();
+                };
+                bgImage.onerror = () => {
+                    showStatus('❌ Błąd tła, używam gradientu', 'warning');
+                    const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
+                    gradient.addColorStop(0, '#1a1a2e');
+                    gradient.addColorStop(1, '#16213e');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, 1080, 1920);
+                    resolve();
+                };
+                bgImage.src = `https://x.mateopoznan.pl/${selectedBg}`;
+            });
+        } catch (error) {
+            showStatus('Błąd tła, używam zastępczego', 'warning');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
+            gradient.addColorStop(0, '#1a1a2e');
+            gradient.addColorStop(1, '#16213e');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 1080, 1920);
+        }
+        if (article.image) {
+            showStatus('Ładowanie obrazka artykułu...', 'info');
+            try {
+                const articleImage = new Image();
+                articleImage.crossOrigin = 'anonymous';
+                await new Promise((resolve, reject) => {
+                    articleImage.onload = () => {
+                        const imageX = 80;
+                        const imageY = 400;
+                        const imageWidth = 920;
+                        const imageHeight = 500;
+                        const scale = Math.max(imageWidth / articleImage.width, imageHeight / articleImage.height);
+                        const scaledWidth = articleImage.width * scale;
+                        const scaledHeight = articleImage.height * scale;
+                        const offsetX = (imageWidth - scaledWidth) / 2;
+                        const offsetY = (imageHeight - scaledHeight) / 2;
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.rect(imageX, imageY, imageWidth, imageHeight);
+                        ctx.clip();
+                        ctx.drawImage(articleImage, imageX + offsetX, imageY + offsetY, scaledWidth, scaledHeight);
+                        ctx.restore();
+                        showStatus('✅ Obrazek artykułu narysowany', 'success');
+                        resolve();
+                    };
+                    articleImage.onerror = () => {
+                        showStatus('❌ Obrazek nie załadował się, próbuję proxy...', 'warning');
+                        const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(article.image)}`;
+                        const proxyImage = new Image();
+                        proxyImage.onload = () => {
+                            const imageX = 80;
+                            const imageY = 400;
+                            const imageWidth = 920;
+                            const imageHeight = 500;
+                            const scale = Math.max(imageWidth / proxyImage.width, imageHeight / proxyImage.height);
+                            const scaledWidth = proxyImage.width * scale;
+                            const scaledHeight = proxyImage.height * scale;
+                            const offsetX = (imageWidth - scaledWidth) / 2;
+                            const offsetY = (imageHeight - scaledHeight) / 2;
+                            ctx.save();
+                            ctx.beginPath();
+                            ctx.rect(imageX, imageY, imageWidth, imageHeight);
+                            ctx.clip();
+                            ctx.drawImage(proxyImage, imageX + offsetX, imageY + offsetY, scaledWidth, scaledHeight);
+                            ctx.restore();
+                            showStatus('✅ Obrazek narysowany przez proxy', 'success');
+                            resolve();
+                        };
+                        proxyImage.onerror = () => {
+                            showStatus('❌ Proxy też nie zadziałał', 'error');
+                            resolve();
+                        };
+                        proxyImage.src = proxyUrl;
+                    };
+                    if (article.image.includes('youtube') || article.image.includes('localhost') || article.image.includes('x.mateopoznan.pl')) {
+                        articleImage.src = article.image;
+                    } else {
+                        articleImage.src = `/api/image-proxy?url=${encodeURIComponent(article.image)}`;
+                    }
+                });
+            } catch (error) {
+                showStatus('Błąd obrazka artykułu: ' + error.message, 'error');
+            }
+        } else {
+            showStatus('Brak obrazka artykułu', 'info');
+        }
+        if (article.url) {
+            showStatus('✏️ Dodawanie źródła...', 'info');
+            try {
+                const urlObj = new URL(article.url);
+                const domain = urlObj.hostname.replace('www.', '');
+                const sourceY = 360;
+                ctx.font = 'bold 24px Arial';
+                ctx.textAlign = 'right';
+                const sourceText = `📰 ${domain}`;
+                const sourceWidth = ctx.measureText(sourceText).width + 40;
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                ctx.fillRect(1000 - sourceWidth, sourceY - 35, sourceWidth, 40);
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillText(sourceText, 980, sourceY - 10);
+                showStatus('✅ Źródło dodane', 'success');
+            } catch (urlError) {
+                console.log('URL parse error:', urlError);
+            }
+        }
+        showStatus('✏️ Rysowanie tytułu...', 'info');
+        ctx.font = 'bold 48px Arial';
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#ffffff';
+        const maxWidth = 920;
+        const titleY = 1080;
+        const words = article.title.split(' ');
+        const lines = [];
+        let currentLine = '';
+        for (let word of words) {
+            const testLine = currentLine + (currentLine ? ' ' : '') + word;
+            const metrics = ctx.measureText(testLine);
+            if (metrics.width > maxWidth && currentLine) {
+                lines.push(currentLine);
+                currentLine = word;
+            } else {
+                currentLine = testLine;
+            }
+        }
+        if (currentLine) lines.push(currentLine);
+        const displayLines = lines.slice(0, 3);
+        if (lines.length > 3) {
+            displayLines[2] = displayLines[2].substring(0, 40) + '...';
+        }
+        const titleHeight = displayLines.length * 60;
+        const titleBgY = titleY - 50;
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+        ctx.fillRect(70, titleBgY, 940, titleHeight + 40);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(70, titleBgY, 940, titleHeight + 40);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.textAlign = 'left';
+        displayLines.forEach((line, index) => {
+            ctx.fillText(line, 90, titleY + (index * 60));
+        });
+        showStatus('✅ Tytuł narysowany', 'success');
+        if (article.description) {
+            showStatus('✏️ Rysowanie opisu...', 'info');
+            ctx.font = '32px Arial';
+            const descWords = article.description.split(' ');
+            const descLines = [];
+            let currentDescLine = '';
+            for (let word of descWords) {
+                const testLine = currentDescLine + (currentDescLine ? ' ' : '') + word;
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > maxWidth && currentDescLine) {
+                    descLines.push(currentDescLine);
+                    currentDescLine = word;
+                } else {
+                    currentDescLine = testLine;
+                }
+            }
+            if (currentDescLine) descLines.push(currentDescLine);
+            const displayDescLines = descLines.slice(0, 6);
+            if (descLines.length > 6) {
+                displayDescLines[5] = displayDescLines[5].substring(0, 60) + '...';
+            }
+            const descY = titleY + titleHeight + 90;
+            const descHeight = displayDescLines.length * 40;
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+            ctx.fillRect(70, descY - 30, 940, descHeight + 30);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(70, descY - 30, 940, descHeight + 30);
+            ctx.fillStyle = '#E8E8E8';
+            ctx.textAlign = 'left';
+            displayDescLines.forEach((line, index) => {
+                ctx.fillText(line, 90, descY + (index * 40));
+            });
+            showStatus('✅ Opis narysowany', 'success');
+        }
+        if (article.url) {
+            showStatus('✏️ Dodawanie URL...', 'info');
+            const urlY = 1850;
+            ctx.font = '24px Arial';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(80, urlY - 30, 920, 45);
+            ctx.fillStyle = '#CCCCCC';
+            const displayUrl = article.url.replace(/^https?:\/\//, '').substring(0, 60);
+            ctx.fillText('🔗 ' + displayUrl, 100, urlY);
+            showStatus('✅ URL dodany', 'success');
+        }
+        showStatus('🎨 Finalizowanie story...', 'info');
+        const previewElement = document.getElementById('story-preview');
+        if (previewElement) {
+            previewElement.style.display = 'block';
+        }
+        showStatus('✅ Story ukończone! Użyj przycisków poniżej aby pobrać lub udostępnić.', 'success');
+    } catch (error) {
+        console.error('❌ Error generating story:', error);
+        showStatus('❌ Błąd: ' + error.message, 'error');
+        throw error;
+    }
+};
+// Wymuszenie globalności funkcji generateStoryFromUrl
+if (typeof generateStoryFromUrl === 'function') {
+    window.generateStoryFromUrl = generateStoryFromUrl;
+}
+</script>
+</body>
+
+</html>

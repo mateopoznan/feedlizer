@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="                <!-- Metoda 4: Tylko otwórz aplikację -->
+                <br>
+                <a href="shortcuts://" 
+                   class="install-button" 
+                   id="secondary-install"
+                   style="background: linear-gradient(45deg, #FF9500 0%, #FF6B00 100%);">
+                    📱 Otwórz aplikację Shortcuts
+                </a>
+                
+                <br>
+                
+                <!-- Metoda 5: JSON import (zaawansowany) -->
+                <button onclick="importFromJSON()" 
+                        class="install-button" 
+                        style="background: linear-gradient(45deg, #007AFF 0%, #5856D6 100%);">
+                    🔧 Import przez JSON
+                </button>vice-width, initial-scale=1.0">
+    <title>Instaluj w 1 klik - Apple Shortcuts</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .install-button {
+            background: linear-gradient(45deg, #007AFF 0%, #5856D6 100%);
+            color: white;
+            padding: 20px 40px;
+            border: none;
+            border-radius: 16px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
+        }
+        .install-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 122, 255, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+        .install-section {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            margin: 20px 0;
+        }
+        .fallback-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .step-simple {
+            background: white;
+            padding: 16px;
+            margin: 12px 0;
+            border-radius: 8px;
+            border-left: 4px solid #007AFF;
+            text-align: left;
+        }
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="http://x.mateopoznan.pl/mateoNEWS.png" alt="mateoNEWS" width="40" height="40">
+                <h1>Instaluj w 1 klik</h1>
+            </div>
+        </header>
+
+        <main>
+            <div class="install-section">
+                <h2>📱 Zainstaluj Apple Shortcuts automatycznie</h2>
+                <p>Kliknij poniższy przycisk aby automatycznie dodać skrót "mateoNEWS Story" do swojego iPhone/iPad:</p>
+                
+                <!-- Metoda 1: Prosty URL scheme - najprostszy -->
+                <a href="shortcuts://create-shortcut" 
+                   class="install-button" 
+                   id="simple-install">
+                    🎯 Otwórz Shortcuts (prosty)
+                </a>
+                
+                <br>
+                
+                <!-- Metoda 2: Bezpośredni plik .shortcut -->
+                <a href="/mateoNEWS-Story.shortcut" 
+                   class="install-button" 
+                   id="file-install"
+                   style="background: linear-gradient(45deg, #34C759 0%, #30B350 100%);">
+                    📥 Pobierz plik skrótu (.shortcut)
+                </a>
+                
+                <br>
+                
+                <!-- Metoda 3: Import z serwera (x-callback-url) -->
+                <a href="shortcuts://x-callback-url/import-shortcut?name=mateoNEWS%20Story&url=https%3A%2F%2Fnews.mateopoznan.pl%2FmateoNEWS-Story.shortcut" 
+                   class="install-button" 
+                   id="primary-install"
+                   style="background: linear-gradient(45deg, #5856D6 0%, #AF52DE 100%);">
+                    🚀 Import z serwera
+                </a>
+                
+                <!-- Metoda 4: Tylko otwórz aplikację -->
+                <br>
+                <a href="shortcuts://" 
+                   class="install-button" 
+                   id="secondary-install"
+                   style="background: linear-gradient(45deg, #FF9500 0%, #FF6B00 100%);">
+                    � Otwórz aplikację Shortcuts
+                </a>
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ Jeśli przyciski nie działają:</h3>
+                <p>Apple może blokować automatyczną instalację ze względów bezpieczeństwa. W takim przypadku użyj prostej instrukcji poniżej:</p>
+            </div>
+
+            <div class="fallback-section">
+                <h3>📋 Plan B - Prosta instrukcja (2 minuty)</h3>
+                
+                <div class="step-simple">
+                    <strong>1.</strong> Otwórz aplikację "Skróty" na iPhone
+                </div>
+                
+                <div class="step-simple">
+                    <strong>2.</strong> Kliknij "+" aby dodać nowy skrót
+                </div>
+                
+                <div class="step-simple">
+                    <strong>3.</strong> Dodaj te akcje w kolejności:
+                    <br>• Get URLs from Input
+                    <br>• Text (wpisz: <code>https://news.mateopoznan.pl/admin?url=</code>)
+                    <br>• Combine Text
+                    <br>• Open URLs
+                </div>
+                
+                <div class="step-simple">
+                    <strong>4.</strong> W ustawieniach włącz "Użyj z arkuszem udostępniania" → tylko URL
+                </div>
+                
+                <div class="step-simple">
+                    <strong>5.</strong> Gotowe! Teraz w Safari możesz udostępniać artykuły bezpośrednio do mateoNEWS
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 40px 0;">
+                <h3>🎯 Test skrótu:</h3>
+                <p>Po instalacji: Safari → dowolny artykuł → Udostępnij → "mateoNEWS Story"</p>
+                <a href="/admin" class="generate-btn">🎨 Przejdź do Story Generator</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Track which method worked
+        document.getElementById('primary-install').addEventListener('click', function(e) {
+            console.log('Primary install method attempted');
+            
+            // Check if shortcut app opened after a delay
+            setTimeout(() => {
+                if (document.visibilityState === 'visible') {
+                    // Page is still visible, shortcut app probably didn't open
+                    alert('Jeśli aplikacja Shortcuts się nie otworzyła, spróbuj alternatywnej metody poniżej lub użyj prostej instrukcji.');
+                }
+            }, 2000);
+        });
+        
+        document.getElementById('secondary-install').addEventListener('click', function(e) {
+            console.log('Secondary install method attempted');
+            
+            setTimeout(() => {
+                if (document.visibilityState === 'visible') {
+                    alert('Jeśli ta metoda też nie zadziałała, użyj prostej instrukcji poniżej - to zajmie tylko 2 minuty!');
+                }
+            }, 2000);
+        });
+
+        // Detect iOS and show specific message
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            console.log('iOS device detected');
+        }
+        
+        // Import from JSON function
+        function importFromJSON() {
+            const shortcutData = {
+                "WFWorkflowActions": [
+                    {"WFWorkflowActionIdentifier": "is.workflow.actions.detect.link", "WFWorkflowActionParameters": {}},
+                    {"WFWorkflowActionIdentifier": "is.workflow.actions.text", "WFWorkflowActionParameters": {"WFTextActionText": "https://news.mateopoznan.pl/admin?url="}},
+                    {"WFWorkflowActionIdentifier": "is.workflow.actions.text.combine", "WFWorkflowActionParameters": {"WFTextSeparator": ""}},
+                    {"WFWorkflowActionIdentifier": "is.workflow.actions.openurl", "WFWorkflowActionParameters": {}}
+                ],
+                "WFWorkflowClientRelease": "2.2.2",
+                "WFWorkflowHasShortcutInputVariables": true,
+                "WFWorkflowIcon": {"WFWorkflowIconGlyphNumber": 59511, "WFWorkflowIconStartColor": 2071128319},
+                "WFWorkflowImportQuestions": [],
+                "WFWorkflowInputContentItemClasses": ["WFURLContentItem"],
+                "WFWorkflowMinimumClientVersion": 900,
+                "WFWorkflowTypes": ["ActionExtension"]
+            };
+            
+            // Try to open shortcuts with JSON data
+            const encodedData = encodeURIComponent(JSON.stringify(shortcutData));
+            const url = `shortcuts://x-callback-url/add-shortcut?data=${encodedData}&name=mateoNEWS%20Story`;
+            
+            window.location.href = url;
+        }
+        
+        // Check if not iOS device
+        if (!/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            // Not iOS - show different message
+            document.querySelector('.install-section').innerHTML = `
+                <h2>📱 Ta strona jest dla urządzeń iOS</h2>
+                <p>Otwórz tę stronę na iPhone lub iPad aby zainstalować Apple Shortcuts.</p>
+                <p>Możesz też zeskanować QR kod poniżej:</p>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://news.mateopoznan.pl/jedenklik.html" 
+                     alt="QR Code" style="margin: 20px;">
+            `;
+        }
+    </script>
+</body>
+</html>

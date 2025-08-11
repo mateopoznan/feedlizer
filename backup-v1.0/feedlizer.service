@@ -1,0 +1,20 @@
+[Unit]
+Description=Feedlizer v0.7.1 - Tinder for RSS Articles
+After=network.target
+
+[Service]
+Type=simple
+User=mateo
+WorkingDirectory=/home/mateo/feedly
+ExecStart=/usr/bin/node feedly-token-server.js
+Restart=always
+RestartSec=10
+Environment=NODE_ENV=production
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=feedlizer
+
+[Install]
+WantedBy=multi-user.target

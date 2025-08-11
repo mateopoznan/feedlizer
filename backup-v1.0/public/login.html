@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedlizer - Logowanie</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#1a1a1a">
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>📱 Feedlizer</h1>
+                <p>Wprowadź hasło aby kontynuować</p>
+            </div>
+            
+            <form class="login-form" id="loginForm">
+                <div class="input-group">
+                    <label for="password">Hasło</label>
+                    <input type="password" id="password" name="password" required 
+                           placeholder="Wprowadź hasło" autocomplete="current-password">
+                </div>
+                
+                <button type="submit" class="login-btn">
+                    <span class="btn-text">Zaloguj się</span>
+                    <div class="btn-spinner" style="display: none;"></div>
+                </button>
+                
+                <div class="error-message" id="errorMessage" style="display: none;"></div>
+            </form>
+            
+            <div class="login-footer">
+                <span>@mateopoznan</span>
+                <span class="separator">•</span>
+                <span>Feedlizer v0.9</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const loginBtn = loginForm.querySelector('.login-btn');
+        const btnText = loginBtn.querySelector('.btn-text');
+        const btnSpinner = loginBtn.querySelector('.btn-spinner');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            
+            // Show loading
+            loginBtn.disabled = true;
+            btnText.style.display = 'none';
+            btnSpinner.style.display = 'block';
+            errorMessage.style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password })
+                });
+                
+                if (response.ok) {
+                    // Success - redirect to main app
+                    window.location.href = '/';
+                } else {
+                    // Show error
+                    errorMessage.textContent = 'Nieprawidłowe hasło';
+                    errorMessage.style.display = 'block';
+                    document.getElementById('password').focus();
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Błąd połączenia';
+                errorMessage.style.display = 'block';
+            } finally {
+                // Hide loading
+                loginBtn.disabled = false;
+                btnText.style.display = 'block';
+                btnSpinner.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

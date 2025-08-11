@@ -1,0 +1,32 @@
+Instrukcja: Wymiana tokena Feedly API w Feedlizer
+===============================================
+
+1. Zaloguj się do swojego konta Feedly i wygeneruj nowy token API (np. przez narzędzie developerskie lub link do autoryzacji).
+
+2. Skopiuj nowy token (ciąg znaków zaczynający się od "eyJ...").
+
+3. Otwórz plik konfiguracyjny:
+   feedly-config.json
+   (znajduje się w głównym katalogu aplikacji Feedlizer)
+
+4. Zamień starą wartość tokena na nową, np.:
+   {
+     "token": "TWÓJ_NOWY_TOKEN_TUTAJ"
+   }
+
+5. Zapisz plik feedly-config.json.
+
+6. Zrestartuj serwer Feedlizer:
+   sudo systemctl restart feedlizer.service
+   (lub uruchom ponownie ręcznie, jeśli nie używasz systemd)
+
+7. Odśwież stronę aplikacji w przeglądarce.
+
+8. Jeśli pojawi się błąd 401 lub 500, sprawdź czy token jest poprawny i nie wygasł.
+
+---
+
+Wskazówki:
+- Tokeny Feedly wygasają co jakiś czas, wymiana będzie potrzebna cyklicznie.
+- Nie udostępniaj tokena publicznie!
+- Jeśli masz problem z wygenerowaniem tokena, sprawdź dokumentację Feedly API lub skontaktuj się z administratorem.

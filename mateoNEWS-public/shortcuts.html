@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple Shortcuts - mateoNEWS</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="http://x.mateopoznan.pl/mateoNEWS.png">
+    <style>
+        .step {
+            background: var(--card-bg);
+            padding: 20px;
+            margin: 16px 0;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
+        }
+        .step h4 {
+            margin: 0 0 12px 0;
+            color: var(--accent);
+        }
+        .code {
+            background: #f5f5f5;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            margin: 8px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left-color: #f0ad4e;
+            color: #856404;
+        }
+        .success {
+            background: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="http://x.mateopoznan.pl/mateoNEWS.png" alt="mateoNEWS" width="40" height="40">
+                <h1>Apple Shortcuts</h1>
+            </div>
+            <nav>
+                <a href="/">Główna</a>
+                <a href="/admin">Story Generator</a>
+                <a href="/shortcuts.html" class="active">Apple Shortcuts</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="step warning">
+                <h4>⚠️ Ważna informacja</h4>
+                <p>Pliki <code>.shortcut</code> nie mogą być instalowane bezpośrednio ze względów bezpieczeństwa iOS. <strong>Skrót należy utworzyć ręcznie</strong> w aplikacji Shortcuts.</p>
+            </div>
+
+            <div class="step">
+                <h4>🍎 Krok 1: Otwórz aplikację Skróty</h4>
+                <p>Na iPhone/iPad otwórz aplikację <strong>"Skróty"</strong> (Shortcuts)</p>
+            </div>
+
+            <div class="step">
+                <h4>➕ Krok 2: Utwórz nowy skrót</h4>
+                <ol>
+                    <li>Kliknij <strong>"+"</strong> (plus)</li>
+                    <li>Nadaj nazwę: <strong>"mateoNEWS Story"</strong></li>
+                </ol>
+            </div>
+
+            <div class="step">
+                <h4>⚙️ Krok 3: Dodaj akcje (w tej kolejności!)</h4>
+                <ol>
+                    <li><strong>Pobierz URL z wejścia</strong> (Get URLs from Input)</li>
+                    <li><strong>Tekst</strong> (Text) - wpisz:
+                        <div class="code">https://news.mateopoznan.pl/admin?url=</div>
+                    </li>
+                    <li><strong>Połącz tekst</strong> (Combine Text) - zostaw separator pusty</li>
+                    <li><strong>Otwórz URL</strong> (Open URLs)</li>
+                </ol>
+            </div>
+
+            <div class="step">
+                <h4>📤 Krok 4: Włącz udostępnianie</h4>
+                <ol>
+                    <li>Kliknij ⚙️ <strong>"Ustawienia"</strong></li>
+                    <li>Włącz <strong>"Użyj z arkuszem udostępniania"</strong></li>
+                    <li>W sekcji "Arkusz udostępniania" włącz tylko <strong>"URL"</strong></li>
+                </ol>
+            </div>
+
+            <div class="step success">
+                <h4>✅ Gotowe! Jak używać:</h4>
+                <ol>
+                    <li>Otwórz artykuł w Safari/Chrome/aplikacji newsowej</li>
+                    <li>Kliknij <strong>"Udostępnij"</strong> 📤</li>
+                    <li>Wybierz <strong>"mateoNEWS Story"</strong></li>
+                    <li>Generator automatycznie się otworzy z URL artykułu!</li>
+                </ol>
+            </div>
+
+            <div class="step">
+                <h4>🔧 Rozwiązywanie problemów:</h4>
+                <ul>
+                    <li><strong>Skrót się nie pojawia:</strong> Sprawdź czy włączone jest "Użyj z arkuszem udostępniania"</li>
+                    <li><strong>Pusta strona:</strong> Upewnij się, że udostępniasz URL (nie obraz/plik)</li>
+                    <li><strong>Nie pobiera metadanych:</strong> Sprawdź połączenie internetowe</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <h4>📱 Dla zaawansowanych - Siri:</h4>
+                <p>W ustawieniach skrótu możesz dodać <strong>"Fraza dla Siri"</strong> np. "mateoNEWS Story" - potem wystarczy powiedzieć tę frazę Siri gdy masz skopiowany URL artykułu.</p>
+            </div>
+
+            <div style="text-align: center; margin: 40px 0;">
+                <a href="/admin" class="generate-btn">🎨 Przejdź do Story Generator</a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mateoNEWS Bookmarklet - Instrukcje</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .bookmarklet-page {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        }
+        .step {
+            background: #f8f9fa;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .bookmarklet-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 16px;
+        }
+        .bookmarklet-code {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+        .demo-gif {
+            max-width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffecb5;
+            color: #856404;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="bookmarklet-page">
+        <h1>📱 mateoNEWS Bookmarklet</h1>
+        <p>Udostępniaj artykuły do generatora Story jednym kliknięciem!</p>
+
+        <div class="step">
+            <h3>🎯 Krok 1: Skopiuj bookmarklet</h3>
+            <p>Długo naciśnij i skopiuj ten link:</p>
+            <a href="javascript:(function(){var url = encodeURIComponent(window.location.href);var title = encodeURIComponent(document.title);window.open('https://news.mateopoznan.pl/admin?url='+url+'&title='+title, '_blank');})();" class="bookmarklet-link">
+                📰 mateoNEWS Story
+            </a>
+            
+            <div class="warning">
+                ⚠️ <strong>Ważne:</strong> Na iPhone musisz skopiować cały kod JavaScript, nie tylko kliknąć link!
+            </div>
+            
+            <p>Lub skopiuj ten kod manualnie:</p>
+            <div class="bookmarklet-code">
+javascript:(function(){var url = encodeURIComponent(window.location.href);var title = encodeURIComponent(document.title);window.open('https://news.mateopoznan.pl/admin?url='+url+'&title='+title, '_blank');})();
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>📚 Krok 2: Dodaj bookmark w Safari</h3>
+            <ol>
+                <li>Otwórz Safari na iPhone</li>
+                <li>Idź na dowolną stronę (np. google.com)</li>
+                <li>Naciśnij przycisk <strong>Share</strong> (kwadrat ze strzałką)</li>
+                <li>Wybierz <strong>"Add Bookmark"</strong></li>
+                <li>Zmień nazwę na <strong>"mateoNEWS Story"</strong></li>
+                <li>Zapisz w folderze <strong>"Favorites"</strong></li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>✏️ Krok 3: Edytuj bookmark</h3>
+            <ol>
+                <li>W Safari naciśnij ikonę <strong>zakładek</strong> (książka)</li>
+                <li>Znajdź "mateoNEWS Story" w Favorites</li>
+                <li>Naciśnij <strong>"Edit"</strong> w prawym dolnym rogu</li>
+                <li>Naciśnij bookmark "mateoNEWS Story"</li>
+                <li>W polu <strong>"Address"</strong> usuń istniejący URL</li>
+                <li>Wklej skopiowany kod JavaScript z Kroku 1</li>
+                <li>Naciśnij <strong>"Done"</strong></li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>🚀 Krok 4: Używanie</h3>
+            <ol>
+                <li>Znajdź ciekawy artykuł w Safari</li>
+                <li>Naciśnij ikonę zakładek</li>
+                <li>Kliknij <strong>"mateoNEWS Story"</strong></li>
+                <li>Automatycznie otworzy się generator z artykułem! 🎉</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>🔄 Alternatywne sposoby</h3>
+            <ul>
+                <li><strong>PWA:</strong> Dodaj news.mateopoznan.pl/admin do ekranu głównego</li>
+                <li><strong>Kopiuj link:</strong> Share → Copy Link → Wklej w generatorze</li>
+                <li><strong>Bezpośredni URL:</strong> news.mateopoznan.pl/admin?url=LINK_ARTYKUŁU</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="/admin" style="color: #2196F3; text-decoration: none; font-weight: bold;">
+                ← Powrót do generatora Story
+            </a>
+        </div>
+
+        <div style="text-align: center; color: #666; font-size: 12px; margin-top: 30px;">
+            mateoNEWS v0.6.1 - Generator Instagram Stories
+        </div>
+    </div>
+
+    <script>
+        // Auto-select bookmarklet code for easy copying
+        document.addEventListener('DOMContentLoaded', function() {
+            const codeBlock = document.querySelector('.bookmarklet-code');
+            if (codeBlock) {
+                codeBlock.addEventListener('click', function() {
+                    const range = document.createRange();
+                    range.selectNode(codeBlock);
+                    window.getSelection().removeAllRanges();
+                    window.getSelection().addRange(range);
+                    
+                    // Try to copy to clipboard
+                    try {
+                        document.execCommand('copy');
+                        codeBlock.style.background = '#004400';
+                        setTimeout(() => {
+                            codeBlock.style.background = '#1a1a1a';
+                        }, 500);
+                    } catch (err) {
+                        console.log('Could not copy text');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

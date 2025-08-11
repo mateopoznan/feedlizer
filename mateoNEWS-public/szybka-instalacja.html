@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Szybka instalacja - Apple Shortcuts</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .direct-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 24px 0;
+            text-decoration: none;
+            display: block;
+            font-size: 18px;
+            font-weight: bold;
+            transition: transform 0.2s ease;
+        }
+        .direct-link:hover {
+            transform: translateY(-2px);
+            text-decoration: none;
+            color: white;
+        }
+        .method-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 16px 0;
+            border: 2px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+        .method-card:hover {
+            border-color: var(--accent);
+        }
+        .method-title {
+            color: var(--accent);
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        .pro-tip {
+            background: #fff3cd;
+            border-left: 4px solid #f0ad4e;
+            padding: 16px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="http://x.mateopoznan.pl/mateoNEWS.png" alt="mateoNEWS" width="40" height="40">
+                <h1>Szybka instalacja Apple Shortcuts</h1>
+            </div>
+        </header>
+
+        <main>
+            <div style="text-align: center; margin-bottom: 40px;">
+                <h2>🚀 Wybierz najłatwiejszy sposób dla Ciebie</h2>
+            </div>
+
+            <div class="method-card">
+                <div class="method-title">🎯 Metoda 1: Link bezpośredni</div>
+                <p>Kliknij poniższy przycisk aby otworzyć aplikację Shortcuts i zacząć tworzenie:</p>
+                <a href="shortcuts://create-shortcut" class="direct-link">
+                    📱 Otwórz aplikację Shortcuts
+                </a>
+                <p><small>⚠️ Może nie działać na wszystkich wersjach iOS</small></p>
+            </div>
+
+            <div class="method-card">
+                <div class="method-title">📋 Metoda 2: Gotowe teksty do kopiowania</div>
+                <p>Wszystkie nazwy akcji i ustawienia gotowe do skopiowania jednym kliknięciem:</p>
+                <a href="/gotowce.html" class="generate-btn">📋 Przejdź do gotowców</a>
+            </div>
+
+            <div class="method-card">
+                <div class="method-title">📱 Metoda 3: QR Code na telefon</div>
+                <p>Zeskanuj QR kodem aby otworzyć instrukcje bezpośrednio na telefonie:</p>
+                <a href="/qr-shortcuts.html" class="download-btn">📷 Pokaż QR Code</a>
+            </div>
+
+            <div class="method-card">
+                <div class="method-title">📚 Metoda 4: Pełne instrukcje</div>
+                <p>Kompletny przewodnik krok po kroku z obrazkami:</p>
+                <a href="/shortcuts.html" class="regenerate-btn">📖 Pełne instrukcje</a>
+            </div>
+
+            <div class="pro-tip">
+                <h3>💡 Pro tip:</h3>
+                <p><strong>Najszybszy sposób:</strong> Otwórz aplikację "Skróty" na iPhone, kliknij "+", dodaj 4 akcje w kolejności:</p>
+                <ol>
+                    <li>"Get URLs from Input"</li>
+                    <li>"Text" (wklej: <code>https://news.mateopoznan.pl/admin?url=</code>)</li>
+                    <li>"Combine Text"</li>
+                    <li>"Open URLs"</li>
+                </ol>
+                <p>Potem włącz "Użyj z arkuszem udostępniania" → tylko "URL".</p>
+            </div>
+
+            <div style="background: #d4edda; padding: 20px; border-radius: 12px; margin: 30px 0; text-align: center;">
+                <h3>✅ Po instalacji:</h3>
+                <p>Będziesz mógł udostępniać artykuły bezpośrednio z Safari/Chrome do mateoNEWS Story Generator!</p>
+                <a href="/admin" class="instagram-btn" style="margin-top: 16px;">🎨 Przejdź do Story Generator</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Detect if user is on iOS and provide specific instructions
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            const directLink = document.querySelector('a[href="shortcuts://create-shortcut"]');
+            if (directLink) {
+                directLink.addEventListener('click', function(e) {
+                    setTimeout(() => {
+                        // If shortcuts app didn't open, show fallback
+                        if (document.visibilityState === 'visible') {
+                            alert('Jeśli aplikacja Shortcuts się nie otworzyła, otwórz ją ręcznie i stwórz nowy skrót.');
+                        }
+                    }, 2000);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

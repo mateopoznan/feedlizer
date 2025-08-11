@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gotowce - Apple Shortcuts</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .copy-box {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            position: relative;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background: #0056b3;
+        }
+        .step-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 16px 0;
+            border-left: 4px solid var(--accent);
+        }
+        .step-number {
+            background: var(--accent);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+        .success-msg {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="http://x.mateopoznan.pl/mateoNEWS.png" alt="mateoNEWS" width="40" height="40">
+                <h1>Apple Shortcuts - Gotowce</h1>
+            </div>
+        </header>
+
+        <main>
+            <div style="text-align: center; margin-bottom: 40px;">
+                <h2>📋 Skopiuj gotowe ustawienia</h2>
+                <p>Każdy element możesz skopiować jednym kliknięciem i wkleić w aplikacji Shortcuts</p>
+            </div>
+
+            <div class="step-card">
+                <h3><span class="step-number">1</span>Nazwa skrótu</h3>
+                <div class="copy-box">
+                    mateoNEWS Story
+                    <button class="copy-btn" onclick="copyToClipboard('mateoNEWS Story', this)">📋 Kopiuj</button>
+                </div>
+                <div class="success-msg" id="msg1">✅ Skopiowano nazwę!</div>
+            </div>
+
+            <div class="step-card">
+                <h3><span class="step-number">2</span>URL do wklejenia w "Tekst"</h3>
+                <div class="copy-box">
+                    https://news.mateopoznan.pl/admin?url=
+                    <button class="copy-btn" onclick="copyToClipboard('https://news.mateopoznan.pl/admin?url=', this)">📋 Kopiuj</button>
+                </div>
+                <div class="success-msg" id="msg2">✅ Skopiowano URL!</div>
+            </div>
+
+            <div class="step-card">
+                <h3><span class="step-number">3</span>Lista akcji do wyszukania</h3>
+                <p><strong>Dodaj te akcje w podanej kolejności:</strong></p>
+                
+                <h4>Akcja 1:</h4>
+                <div class="copy-box">
+                    Get URLs from Input
+                    <button class="copy-btn" onclick="copyToClipboard('Get URLs from Input', this)">📋 Kopiuj</button>
+                </div>
+                <div class="success-msg" id="msg3a">✅ Skopiowano!</div>
+                
+                <h4>Akcja 2:</h4>
+                <div class="copy-box">
+                    Text
+                    <button class="copy-btn" onclick="copyToClipboard('Text', this)">📋 Kopiuj</button>
+                </div>
+                <div class="success-msg" id="msg3b">✅ Skopiowano!</div>
+                
+                <h4>Akcja 3:</h4>
+                <div class="copy-box">
+                    Combine Text
+                    <button class="copy-btn" onclick="copyToClipboard('Combine Text', this)">📋 Kopiuj</button>
+                </div>
+                <div class="success-msg" id="msg3c">✅ Skopiowano!</div>
+                
+                <h4>Akcja 4:</h4>
+                <div class="copy-box">
+                    Open URLs
+                    <button class="copy-btn" onclick="copyToClipboard('Open URLs', this)">📋 Kopiuj</button>
+                </div>
+                <div class="success-msg" id="msg3d">✅ Skopiowano!</div>
+            </div>
+
+            <div class="step-card">
+                <h3><span class="step-number">4</span>Fraza dla Siri (opcjonalnie)</h3>
+                <div class="copy-box">
+                    mateoNEWS Story
+                    <button class="copy-btn" onclick="copyToClipboard('mateoNEWS Story', this)">📋 Kopiuj</button>
+                </div>
+                <div class="success-msg" id="msg4">✅ Skopiowano frazę dla Siri!</div>
+            </div>
+
+            <div style="background: #e7f3ff; padding: 20px; border-radius: 12px; margin: 30px 0;">
+                <h3>🎯 Szybki test:</h3>
+                <p>Po utworzeniu skrótu przetestuj go:</p>
+                <ol>
+                    <li>Otwórz Safari i przejdź na dowolną stronę z artykułem</li>
+                    <li>Kliknij "Udostępnij" 📤</li>
+                    <li>Znajdź "mateoNEWS Story" na liście</li>
+                    <li>Generator powinien otworzyć się z automatycznie wypełnionym URL!</li>
+                </ol>
+            </div>
+
+            <div style="text-align: center; margin: 40px 0;">
+                <a href="/shortcuts.html" class="generate-btn">📋 Pełne instrukcje krok po kroku</a>
+                <a href="/admin" class="download-btn" style="margin-left: 16px;">🎨 Przejdź do Story Generator</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function copyToClipboard(text, button) {
+            try {
+                await navigator.clipboard.writeText(text);
+                
+                // Show success message
+                const buttonId = button.onclick.toString().match(/msg\w+/)[0];
+                const msgElement = document.getElementById(buttonId);
+                if (msgElement) {
+                    msgElement.style.display = 'block';
+                    setTimeout(() => {
+                        msgElement.style.display = 'none';
+                    }, 2000);
+                }
+                
+                // Animate button
+                const originalText = button.textContent;
+                button.textContent = '✅ Skopiowane!';
+                button.style.background = '#28a745';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                }, 1500);
+                
+            } catch (err) {
+                console.error('Błąd kopiowania: ', err);
+                alert('Nie udało się skopiować. Skopiuj ręcznie: ' + text);
+            }
+        }
+    </script>
+</body>
+</html>

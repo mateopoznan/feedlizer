@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ciekawe - przegląd prasy</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="http://x.mateopoznan.pl/Ciekawe.ico">
+    <link rel="apple-touch-icon" href="http://x.mateopoznan.pl/Ciekawe2.png">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="http://x.mateopoznan.pl/Ciekawe2.png" alt="Ciekawe" width="40" height="40">
+                <h1>Ciekawe - przegląd prasy</h1>
+            </div>
+            <nav>
+                <a href="/">mateoNEWS</a>
+                <a href="/ciekawe" class="active">Ciekawe!</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Ładowanie ulubionych artykułów...</p>
+            </div>
+
+            <div class="articles-grid" id="articles-grid">
+                <!-- Starred articles will be loaded here -->
+            </div>
+            
+            <div class="pagination" id="pagination">
+                <!-- Pagination controls will be loaded here -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Set page type for JavaScript
+        window.pageType = 'starred';
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>

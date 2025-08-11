@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gotowy skrót - mateoNEWS</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            border-radius: 20px;
+            margin: 20px 0;
+        }
+        .download-big {
+            background: #ffffff;
+            color: #667eea;
+            padding: 20px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(255,255,255,0.3);
+        }
+        .download-big:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(255,255,255,0.4);
+            text-decoration: none;
+            color: #667eea;
+        }
+        .method-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .method-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .method-card:hover {
+            transform: translateY(-5px);
+        }
+        .method-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        .method-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .method-button {
+            background: linear-gradient(45deg, #007AFF 0%, #5856D6 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+        .method-button:hover {
+            transform: translateY(-2px);
+            text-decoration: none;
+            color: white;
+        }
+        .success-demo {
+            background: #d4edda;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="http://x.mateopoznan.pl/mateoNEWS.png" alt="mateoNEWS" width="40" height="40">
+                <h1>Gotowy skrót Apple Shortcuts</h1>
+            </div>
+        </header>
+
+        <main>
+            <div class="hero-section">
+                <h1>🎉 Zainstaluj w 1 klik!</h1>
+                <p style="font-size: 18px; margin: 20px 0;">Gotowy skrót Apple Shortcuts dla mateoNEWS Story Generator</p>
+                
+                <!-- Główny przycisk instalacji -->
+                <a href="https://www.icloud.com/shortcuts/placeholder" 
+                   class="download-big" 
+                   id="main-install"
+                   target="_blank">
+                    📥 Pobierz skrót
+                </a>
+                
+                <p style="font-size: 14px; opacity: 0.9; margin-top: 20px;">
+                    ⚡ Po kliknięciu zostaniesz przeniesiony do aplikacji Shortcuts
+                </p>
+            </div>
+
+            <div class="method-grid">
+                <div class="method-card">
+                    <div class="method-icon">🚀</div>
+                    <div class="method-title">Metoda 1: iCloud Link</div>
+                    <p>Bezpośredni link do gotowego skrótu w iCloud. Najłatwiejszy sposób!</p>
+                    <a href="shortcuts://import-shortcut?url=https://www.icloud.com/shortcuts/placeholder" 
+                       class="method-button">
+                        Instaluj teraz
+                    </a>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-icon">⚡</div>
+                    <div class="method-title">Metoda 2: Bezpośredni import</div>
+                    <p>Import przez specjalny URL scheme aplikacji Shortcuts.</p>
+                    <a href="shortcuts://create-shortcut?name=mateoNEWS%20Story" 
+                       class="method-button">
+                        Otwórz Shortcuts
+                    </a>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-icon">📱</div>
+                    <div class="method-title">Metoda 3: Manual setup</div>
+                    <p>Gdyby automatyczne metody nie zadziałały - prosta instrukcja 2min.</p>
+                    <a href="/gotowce.html" class="method-button">
+                        Instrukcja krok po kroku
+                    </a>
+                </div>
+            </div>
+
+            <div class="success-demo">
+                <h3>✅ Po instalacji będziesz mógł:</h3>
+                <div style="display: flex; justify-content: space-around; align-items: center; margin: 20px 0; flex-wrap: wrap;">
+                    <div style="margin: 10px;">📱 Safari → Udostępnij</div>
+                    <div style="margin: 10px;">→</div>
+                    <div style="margin: 10px;">🎨 "mateoNEWS Story"</div>
+                    <div style="margin: 10px;">→</div>
+                    <div style="margin: 10px;">📷 Gotowa grafika!</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 40px 0; padding: 20px; background: #f8f9fa; border-radius: 12px;">
+                <h3>🔧 Nie działa? Napisz do nas!</h3>
+                <p>Jeśli żadna z metod nie zadziałała, może być to spowodowane ustawieniami bezpieczeństwa iOS.</p>
+                <p>W takim przypadku najlepiej użyć prostej instrukcji ręcznej - zajmuje tylko 2 minuty.</p>
+                <a href="/gotowce.html" class="method-button">📋 Prosta instrukcja</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Sprawdź czy jesteśmy na iOS
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        
+        if (!isIOS) {
+            // Nie iOS - pokaż QR kod
+            document.querySelector('.hero-section').innerHTML = `
+                <h1>📱 Otwórz na iPhone/iPad</h1>
+                <p style="font-size: 18px;">Ta strona działa tylko na urządzeniach iOS</p>
+                <div style="background: white; padding: 20px; border-radius: 16px; display: inline-block; margin: 20px;">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://news.mateopoznan.pl/jedenklik.html" 
+                         alt="QR Code">
+                    <p style="color: #333; margin-top: 10px;">Zeskanuj kodem QR na iPhone</p>
+                </div>
+            `;
+        }
+
+        // Obsługa kliknięć
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'main-install' || e.target.closest('.method-button')) {
+                console.log('Install attempt via:', e.target.textContent);
+                
+                // Sprawdź po 3 sekundach czy aplikacja się otworzyła
+                setTimeout(() => {
+                    if (document.visibilityState === 'visible') {
+                        // Strona wciąż widoczna - aplikacja się nie otworzyła
+                        const userChoice = confirm('Aplikacja Shortcuts się nie otworzyła. Czy chcesz przejść do prostej instrukcji krok po kroku?');
+                        if (userChoice) {
+                            window.location.href = '/gotowce.html';
+                        }
+                    }
+                }, 3000);
+            }
+        });
+
+        // Dodaj informację o tym co się dzieje
+        if (isIOS) {
+            const info = document.createElement('div');
+            info.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 10px 20px;
+                border-radius: 25px;
+                font-size: 14px;
+                z-index: 1000;
+                display: none;
+            `;
+            info.textContent = '🔄 Otwieranie aplikacji Shortcuts...';
+            document.body.appendChild(info);
+            
+            // Pokaż przy kliknięciu w przycisk
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('method-button') || e.target.id === 'main-install') {
+                    info.style.display = 'block';
+                    setTimeout(() => {
+                        info.style.display = 'none';
+                    }, 3000);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

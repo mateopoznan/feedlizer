@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mateoNEWS Admin v0.5</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📰 mateoNEWS Admin Panel v0.5</h1>
+            <p>Generator Instagram Stories z artykułów</p>
+        </header>
+
+        <main class="main-content">
+            <div class="story-generator">
+                <h2>🎨 Generator Story</h2>
+                
+                <div class="form-group">
+                    <label for="article-url">🔗 URL Artykułu:</label>
+                    <input type="url" id="article-url" placeholder="https://..." class="url-input">
+                </div>
+                
+                <div class="form-group">
+                    <label for="article-title">📝 Tytuł:</label>
+                    <input type="text" id="article-title" placeholder="Zostanie automatycznie wypełniony z URL" class="title-input">
+                </div>
+                
+                <div class="form-group">
+                    <label for="article-description">📄 Opis:</label>
+                    <textarea id="article-description" placeholder="Zostanie automatycznie wypełniony z URL" class="desc-input"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>🎨 Wybierz tło:</label>
+                    <div class="bg-selector">
+                        <div class="bg-option selected" data-bg="mateoNEWS1.png">
+                            <img src="http://x.mateopoznan.pl/mateoNEWS1.png" alt="Standard">
+                            <span>Standard</span>
+                        </div>
+                        <div class="bg-option" data-bg="mateoNEWSpilne.png">
+                            <img src="http://x.mateopoznan.pl/mateoNEWSpilne.png" alt="Pilne">
+                            <span>Pilne</span>
+                        </div>
+                        <div class="bg-option" data-bg="mateoNEWSwazne.png">
+                            <img src="http://x.mateopoznan.pl/mateoNEWSwazne.png" alt="Ważne">
+                            <span>Ważne</span>
+                        </div>
+                        <div class="bg-option" data-bg="mateoNEWSopinia.png">
+                            <img src="http://x.mateopoznan.pl/mateoNEWSopinia.png" alt="Opinia">
+                            <span>Opinia</span>
+                        </div>
+                        <div class="bg-option" data-bg="mateoNEWSpublicystyka.png">
+                            <img src="http://x.mateopoznan.pl/mateoNEWSpublicystyka.png" alt="Publicystyka">
+                            <span>Publicystyka</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="story-controls">
+                    <button type="button" onclick="generateStoryFromUrl()" class="generate-btn">
+                        🎨 Generuj Story z URL
+                    </button>
+                    
+                    <button type="button" onclick="testSimple()" class="generate-btn secondary">
+                        🟥 Test Canvas
+                    </button>
+                    
+                    <button type="button" onclick="testGenerator()" class="generate-btn secondary">
+                        🧪 Test Generator
+                    </button>
+                    
+                    <button type="button" onclick="generateStoryFromGrid()" class="generate-btn secondary">
+                        📰 Generuj z aktualnych artykułów
+                    </button>
+                </div>="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Story Generator - mateoNEWS</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="http://x.mateopoznan.pl/mateoNEWS.ico">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="http://x.mateopoznan.pl/mateoNEWS.png" alt="mateoNEWS" width="40" height="40">
+                <h1>Story Generator</h1>
+            </div>
+            <nav>
+                <a href="/">Główna</a>
+                <a href="/ciekawe">Ciekawe</a>
+                <a href="/admin" class="active">Story Generator</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="story-generator">
+                <h2>🎨 Generator Instagram Stories</h2>
+                <p>Wygeneruj profesjonalną grafikę z dowolnym artykułem dla Instagram Stories</p>
+                
+                <div class="url-input-section">
+                    <h3>📝 Wprowadź dane artykułu:</h3>
+                    <div class="input-group">
+                        <label for="article-url">URL artykułu:</label>
+                        <input type="url" id="article-url" placeholder="https://example.com/article" class="url-input">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="article-title">Tytuł (opcjonalny):</label>
+                        <input type="text" id="article-title" placeholder="Zostaw puste aby automatycznie pobrać" class="title-input">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="article-description">Opis (opcjonalny):</label>
+                        <textarea id="article-description" placeholder="Zostaw puste aby automatycznie pobrać" class="desc-input"></textarea>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="background-select">Wybierz tło:</label>
+                        <div class="bg-selector">
+                            <div class="bg-option selected" data-bg="mateoNEWS1.png">
+                                <img src="http://x.mateopoznan.pl/mateoNEWS1.png" alt="Standard">
+                                <span>Standard</span>
+                            </div>
+                            <div class="bg-option" data-bg="mateoNEWSpilne.png">
+                                <img src="http://x.mateopoznan.pl/mateoNEWSpilne.png" alt="Pilne">
+                                <span>Pilne</span>
+                            </div>
+                            <div class="bg-option" data-bg="mateoNEWSwazne.png">
+                                <img src="http://x.mateopoznan.pl/mateoNEWSwazne.png" alt="Ważne">
+                                <span>Ważne</span>
+                            </div>
+                            <div class="bg-option" data-bg="mateoNEWSopinia.png">
+                                <img src="http://x.mateopoznan.pl/mateoNEWSopinia.png" alt="Opinia">
+                                <span>Opinia</span>
+                            </div>
+                            <div class="bg-option" data-bg="mateoNEWSpublicystyka.png">
+                                <img src="http://x.mateopoznan.pl/mateoNEWSpublicystyka.png" alt="Publicystyka">
+                                <span>Publicystyka</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="story-controls">
+                    <button type="button" onclick="generateStoryFromUrl()" class="generate-btn">
+                        🎨 Generuj Story z URL
+                    </button>
+                    
+                    <button type="button" onclick="generateStoryFromGrid()" class="generate-btn secondary">
+                        📰 Generuj z aktualnych artykułów
+                    </button>
+                    
+                    <div class="loading" id="story-loading" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>Generowanie story...</p>
+                    </div>
+                </div>
+
+                <div class="story-preview" id="story-preview" style="display: none;">
+                    <h3>Podgląd Story:</h3>
+                    <canvas id="story-canvas" width="1080" height="1920" style="max-width: 300px; border: 1px solid var(--border); border-radius: 8px;"></canvas>
+                    <div class="story-actions">
+                        <button type="button" onclick="downloadStory()" class="download-btn">
+                            📥 Pobierz Story
+                        </button>
+                        <button type="button" onclick="regenerateStory()" class="regenerate-btn">
+                            🔄 Regeneruj
+                        </button>
+                    </div>
+                </div>
+
+                <div class="story-tips">
+                    <h3>💡 Wskazówki:</h3>
+                    <ul>
+                        <li>Wprowadź URL artykułu aby automatycznie pobrać tytuł i obraz</li>
+                        <li>Możesz też użyć przycisk "z aktualnych artykułów"</li>
+                        <li>Grafika ma format 1080x1920 (Instagram Stories)</li>
+                        <li>Zawiera logo mateoNEWS i wybrany artykuł</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Add specific functions for admin panel - mateoNEWS v0.5
+        function regenerateStory() {
+            generateStoryFromGrid();
+        }
+        
+        // Test function to debug issues
+        function testGenerator() {
+            console.log('🧪 Testing generator with dummy data...');
+            const testArticle = {
+                id: 'test-123',
+                url: 'https://example.com',
+                title: 'Test Article Title',
+                description: 'This is a test description for debugging.',
+                time: new Date(),
+                starred: false,
+                progress: 0,
+                image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=400&fit=crop',
+                background: 'mateoNEWS1.png'
+            };
+            
+            generateStoryWithCustomArticle(testArticle);
+        }
+        
+        // Simple test without images
+        function testSimple() {
+            console.log('🧪 Testing simple canvas...');
+            try {
+                let canvas = document.getElementById('story-canvas');
+                if (!canvas) {
+                    canvas = document.createElement('canvas');
+                    canvas.id = 'story-canvas';
+                    canvas.width = 1080;
+                    canvas.height = 1920;
+                    canvas.style.maxWidth = '300px';
+                    canvas.style.border = '1px solid #ccc';
+                    
+                    const previewDiv = document.getElementById('story-preview');
+                    if (previewDiv) {
+                        previewDiv.appendChild(canvas);
+                        previewDiv.style.display = 'block';
+                    }
+                }
+                
+                const ctx = canvas.getContext('2d');
+                console.log('✅ Canvas context:', !!ctx);
+                
+                // Simple test
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(0, 0, 1080, 1920);
+                console.log('✅ Red background drawn');
+                
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '48px Arial';
+                ctx.fillText('TEST WORKS!', 100, 200);
+                console.log('✅ Text drawn');
+                
+                showToast('Canvas test passed!', 'success');
+                
+            } catch (error) {
+                console.error('❌ Canvas test failed:', error);
+                showToast('Canvas test failed: ' + error.message, 'error');
+            }
+        }
+        
+        // Generate story from custom URL
+        async function generateStoryFromUrl() {
+            console.log('🚀 Starting generateStoryFromUrl...');
+            
+            const urlInput = document.getElementById('article-url');
+            const titleInput = document.getElementById('article-title');
+            const descInput = document.getElementById('article-description');
+            const selectedBgOption = document.querySelector('.bg-option.selected');
+            
+            const url = urlInput.value.trim();
+            const selectedBg = selectedBgOption ? selectedBgOption.dataset.bg : 'mateoNEWS1.png';
+            
+            console.log('📝 URL entered:', url);
+            console.log('🎨 Background selected:', selectedBg);
+            
+            if (!url) {
+                alert('Wprowadź URL artykułu');
+                return;
+            }
+            
+            try {
+                console.log('⏳ Showing loading...');
+                // Show loading
+                const loadingElement = document.getElementById('story-loading');
+                if (loadingElement) {
+                    loadingElement.style.display = 'block';
+                    console.log('✅ Loading element shown');
+                }
+                
+                // Extract article metadata if URL provided and title/desc are empty
+                let articleTitle = titleInput.value.trim();
+                let articleDesc = descInput.value.trim();
+                
+                if (!articleTitle || !articleDesc) {
+                    console.log('🔍 Extracting metadata from URL...');
+                    try {
+                        const metadataResponse = await fetch(`/api/extract-article?url=${encodeURIComponent(url)}`);
+                        if (metadataResponse.ok) {
+                            const metadata = await metadataResponse.json();
+                            console.log('📋 Metadata extracted:', metadata);
+                            
+                            if (!articleTitle && metadata.title) {
+                                articleTitle = metadata.title;
+                                titleInput.value = articleTitle;
+                                console.log('✅ Title auto-filled:', articleTitle);
+                            }
+                            
+                            if (!articleDesc && metadata.description) {
+                                articleDesc = metadata.description;
+                                descInput.value = articleDesc;
+                                console.log('✅ Description auto-filled:', articleDesc);
+                            }
+                        }
+                    } catch (metaError) {
+                        console.log('⚠️ Metadata extraction failed:', metaError);
+                    }
+                }
+                
+                // Create custom article object
+                const customArticle = {
+                    id: 'custom-' + Date.now(),
+                    url: url,
+                    title: articleTitle || 'Artykuł z mateoNEWS',
+                    description: articleDesc || '',
+                    time: new Date(),
+                    starred: false,
+                    progress: 0,
+                    image: null, // Will be extracted
+                    background: selectedBg
+                };
+                
+                console.log('📰 Custom article created:', customArticle);
+                
+                // Try to extract image from URL
+                console.log('🖼️ Trying to extract image...');
+                try {
+                    const response = await fetch(`/api/extract-image?url=${encodeURIComponent(url)}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('📸 Image extraction response:', data);
+                        if (data.image && data.image !== 'http://x.mateopoznan.pl/mateoNEWS.png') {
+                            customArticle.image = data.image;
+                            console.log('✅ Image extracted:', data.image);
+                        }
+                    }
+                } catch (error) {
+                    console.log('⚠️ Image extraction failed:', error);
+                }
+                
+                // Use default image if extraction failed
+                if (!customArticle.image) {
+                    customArticle.image = 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=400&fit=crop';
+                    console.log('🔄 Using fallback image');
+                }
+                
+                console.log('🎨 Calling generateStoryWithCustomArticle...');
+                // Generate story with custom article
+                await generateStoryWithCustomArticle(customArticle);
+                
+            } catch (error) {
+                console.error('❌ Error generating story from URL:', error);
+                alert('Błąd podczas generowania story: ' + error.message);
+                
+                const loadingElement = document.getElementById('story-loading');
+                if (loadingElement) {
+                    loadingElement.style.display = 'none';
+                }
+            }
+        }
+        
+        // Auto-load articles for story generation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Don't auto-load articles in admin to prevent hanging
+            console.log('Admin panel loaded - ready for manual story generation');
+            
+            // Add background selection listeners
+            document.querySelectorAll('.bg-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.bg-option').forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    console.log('🎨 Background selected:', option.dataset.bg);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

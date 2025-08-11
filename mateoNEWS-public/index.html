@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mateoNEWS</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="http://x.mateopoznan.pl/mateoNEWS.ico">
+    <link rel="apple-touch-icon" href="http://x.mateopoznan.pl/mateoNEWS.png">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="http://x.mateopoznan.pl/mateoNEWS.png" alt="mateoNEWS" width="40" height="40">
+                <div class="logo-text">
+                    <h1>mateoNEWS</h1>
+                    <span class="version">v0.5 alpha</span>
+                </div>
+            </div>
+            <nav>
+                <a href="/">mateoNEWS</a>
+                <a href="/ciekawe" class="ciekawe-btn">Ciekawe!</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Ładowanie artykułów z Instapaper...</p>
+            </div>
+
+            <div class="articles-grid" id="articles-grid">
+                <!-- Articles will be loaded here -->
+            </div>
+            
+            <div class="pagination" id="pagination">
+                <!-- Pagination controls will be loaded here -->
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code - Apple Shortcuts</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .qr-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .qr-code {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            display: inline-block;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .step-by-step {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: left;
+        }
+        .action-item {
+            background: var(--card-bg);
+            padding: 16px;
+            margin: 12px 0;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+        }
+        .action-title {
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="http://x.mateopoznan.pl/mateoNEWS.png" alt="mateoNEWS" width="40" height="40">
+                <h1>Apple Shortcuts - QR Setup</h1>
+            </div>
+        </header>
+
+        <main>
+            <div class="qr-container">
+                <h2>📱 Szybka instalacja przez QR Code</h2>
+                <p>Zeskanuj kodem QR, aby otworzyć instrukcje na telefonie:</p>
+                
+                <div class="qr-code">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://news.mateopoznan.pl/shortcuts.html" 
+                         alt="QR Code do instrukcji Apple Shortcuts" 
+                         width="200" height="200">
+                </div>
+                
+                <p><strong>Lub przejdź bezpośrednio:</strong><br>
+                <a href="/shortcuts.html">news.mateopoznan.pl/shortcuts.html</a></p>
+            </div>
+
+            <div class="step-by-step">
+                <h3>🚀 Najszybszy sposób instalacji:</h3>
+                
+                <div class="action-item">
+                    <div class="action-title">1. Pobierz URL z wejścia</div>
+                    Szukaj: "Get URLs from Input" lub "Pobierz URL z wejścia"
+                </div>
+
+                <div class="action-item">
+                    <div class="action-title">2. Tekst</div>
+                    Wpisz: <code>https://news.mateopoznan.pl/admin?url=</code>
+                </div>
+
+                <div class="action-item">
+                    <div class="action-title">3. Połącz tekst</div>
+                    Szukaj: "Combine Text" lub "Połącz tekst" (zostaw separator pusty)
+                </div>
+
+                <div class="action-item">
+                    <div class="action-title">4. Otwórz URL</div>
+                    Szukaj: "Open URLs" lub "Otwórz URL"
+                </div>
+
+                <div class="action-item">
+                    <div class="action-title">5. Konfiguracja</div>
+                    Ustawienia → "Użyj z arkuszem udostępniania" → Włącz tylko "URL"
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 40px 0;">
+                <a href="/admin" class="generate-btn">🎨 Przejdź do Story Generator</a>
+                <a href="/shortcuts.html" class="download-btn" style="margin-left: 16px;">📋 Pełne instrukcje</a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+{
+  "name": "mateoNEWS Story Generator v0.6 alfa",
+  "short_name": "mateoNEWS v0.6α",
+  "description": "Generator Instagram Stories dla mateoNEWS v0.6 alfa - twórz profesjonalne grafiki z artykułów z automatycznym udostępnianiem",
+  "start_url": "/admin",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#2196F3",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "pl",
+  "dir": "ltr",
+  "protocol_handlers": [
+    {
+      "protocol": "web+mateonews",
+      "url": "/admin?url=%s"
+    }
+  ],
+  "share_target": {
+    "action": "/admin",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "icons": [
+    {
+      "src": "http://x.mateopoznan.pl/mateoNEWS.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://x.mateopoznan.pl/mateo%20news-2.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "http://x.mateopoznan.pl/mateoNEWS.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://x.mateopoznan.pl/mateo%20news-2.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["news", "productivity", "social"],
+  "screenshots": [
+    {
+      "src": "https://x.mateopoznan.pl/mateoNEWS.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "features": [
+    "Cross Platform",
+    "Fast",
+    "Simple"
+  ]
+}

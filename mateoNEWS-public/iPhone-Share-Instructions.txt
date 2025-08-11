@@ -1,0 +1,39 @@
+Siri Shortcut: mateoNEWS Share
+================================
+
+INSTRUKCJE:
+1. Otwórz aplikację "Shortcuts" na iPhone
+2. Dotknij "+" aby utworzyć nowy skrót  
+3. Dodaj następujące akcje:
+
+AKCJA 1: "Get URLs from Input"
+- Źródło: Shortcut Input
+
+AKCJA 2: "Get Text from Input" 
+- Źródło: URLs
+
+AKCJA 3: "URL"
+- URL: news.mateopoznan.pl/admin?url=[Output from previous action]
+
+AKCJA 4: "Open URLs"
+- URLs: [Output from previous action]
+
+USTAWIENIA SKRÓTU:
+- Nazwa: "mateoNEWS Story"
+- Ikona: News
+- Kolor: Niebieski
+- Use with Siri: TAK
+- Show in Share Sheet: TAK
+- Accepted Types: URLs, Text
+
+ALTERNATYWNIE - PROSTSZA WERSJA:
+1. Safari → Share → "Add to Reading List"
+2. Skopiuj link
+3. Przejdź do news.mateopoznan.pl/admin
+4. Wklej link
+
+LUB JESZCZE PROSTSZE:
+- Dodaj news.mateopoznan.pl/admin do zakładek Safari
+- W Safari z artykułem: Share → Copy Link
+- Przejdź do zakładki mateoNEWS
+- Wklej URL

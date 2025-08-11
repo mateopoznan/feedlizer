@@ -1,0 +1,3 @@
+v1.0
+Data wydania: 2025-08-12
+Opis: Pierwsza stabilna wersja Feedlizer z obsługą nowego API Feedly, poprawkami bezpieczeństwa, automatyzacją backupu i instrukcją wymiany tokena.

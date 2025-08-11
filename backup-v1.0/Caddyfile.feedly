@@ -1,0 +1,49 @@
+# Dodaj to do swojego głównego Caddyfile
+feedly.mateopoznan.pl {
+    reverse_proxy localhost:12012
+    
+    # Opcjonalne: dodaj security headers
+    header {
+        # Enable HSTS
+        Strict-Transport-Security max-age=31536000;
+        # Prevent embedding in frames
+        X-Frame-Options DENY
+        # Prevent MIME sniffing
+        X-Content-Type-Options nosniff
+        # XSS Protection
+        X-XSS-Protection "1; mode=block"
+    }
+    
+    # Opcjonalne: kompresja
+    encode gzip
+    
+    # Logi
+    log {
+        output file /var/log/caddy/feedly.log
+    }
+}
+
+# mateoNEWS portal - news.mateopoznan.pl
+news.mateopoznan.pl {
+    reverse_proxy localhost:12014
+    
+    # Security headers
+    header {
+        # Enable HSTS
+        Strict-Transport-Security max-age=31536000;
+        # Prevent embedding in frames
+        X-Frame-Options DENY
+        # Prevent MIME sniffing
+        X-Content-Type-Options nosniff
+        # XSS Protection
+        X-XSS-Protection "1; mode=block"
+    }
+    
+    # Kompresja
+    encode gzip
+    
+    # Logi
+    log {
+        output file /var/log/caddy/news.log
+    }
+}
